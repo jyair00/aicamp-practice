@@ -2,6 +2,9 @@
 .venv/
 __pycache__/
 
+# API 키 등 비밀값 (양식인 .env.example 은 올려도 됨)
+.env
+
 # 이 PC 전용 Claude 설정 (자동 커밋 훅 등록 위치)
 .claude/settings.local.json
 
