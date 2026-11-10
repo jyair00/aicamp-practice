@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>8월 캠페인 실적 대시보드</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* 레이아웃: SKB 흰 바탕 단일 라이트 테마(회사 디자인 기준), 요약 → 비교 → 추이 → 점검 순 세로 흐름 */
+:root {
+  color-scheme: light;
+  /* 지역 색 (고정 순서, 색약 검사 통과) */
+  --r-yn: #EA002C;   /* 영남 */
+  --r-cc: #F47725;   /* 충청 */
+  --r-hn: #3D6AA3;   /* 호남 */
+  --r-gj: #1B8F6A;   /* 강원제주 */
+  /* 활동구분 색 (지역 색과 겹치지 않게 별도, 색약 검사 통과) */
+  --a-on: #7A4FD0;   /* 온라인안내 */
+  --a-fd: #C98500;   /* 현장상담 */
+  --a-ex: #1C8FB0;   /* 기존고객안내 */
+  --total: #5F6368;  /* 전체 합계 선 */
+  --skb-red: #EA002C;
+  --skb-orange: #F47725;
+  --text-primary: #202124;
+  --text-secondary: #5F6368;
+  --text-muted: #80868B;
+  --bg-page: #F7F8FA;
+  --bg-card: #FFFFFF;
+  --border: #E5E7EB;
+  --grid: #EEF0F2;
+  --axis: #C9CDD2;
+  --status-good: #287D4E;
+  --status-warn: #925000;
+  --status-bad: #B42318;
+  --bar: #EA002C;
+  --bar-muted: #D5D8DC;
+  --font: Pretendard, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--font); font-size: 14px; line-height: 1.55; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 24px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 0; flex: none; }
+.chip .dot { margin-right: 5px; }
+.chip[aria-pressed="true"] .dot { box-shadow: 0 0 0 1.5px #fff; }
+header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; padding-bottom: 16px; border-bottom: 2px solid var(--skb-red); }
+.eyebrow { color: var(--skb-red); font-weight: 700; font-size: 13px; letter-spacing: .02em; }
+h1 { margin: 2px 0 0; font-size: 24px; line-height: 1.3; }
+.meta { color: var(--text-secondary); font-size: 12.5px; text-align: right; }
+.meta b { color: var(--text-primary); font-weight: 600; }
+.notice { margin: 12px 0 0; font-size: 12px; color: var(--text-secondary); }
+h2 { font-size: 17px; margin: 32px 0 12px; display: flex; align-items: center; gap: 8px; }
+h2::before { content: ""; width: 4px; height: 17px; background: var(--skb-red); border-radius: 2px; }
+.sub { color: var(--text-secondary); font-size: 12.5px; margin: -6px 0 12px; }
+
+/* 필터 */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg-page); }
+.filters { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg-page); padding: 12px 0; margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; border-bottom: 1px solid var(--border); }
+.fgroup { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.fgroup > span { font-size: 12px; color: var(--text-secondary); margin-right: 4px; }
+.chip { font: inherit; font-size: 12.5px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); padding: 4px 10px; border-radius: 999px; cursor: pointer; }
+.chip:hover { border-color: var(--skb-red); }
+.chip[aria-pressed="true"] { background: var(--skb-red); border-color: var(--skb-red); color: #fff; font-weight: 600; }
+.chip:focus-visible { outline: 2px solid var(--skb-orange); outline-offset: 2px; }
+.fstate { font-size: 12px; color: var(--text-secondary); margin-left: auto; }
+
+/* KPI */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 16px; }
+.kpi { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.kpi .k { font-size: 12.5px; color: var(--text-secondary); }
+.kpi .v { font-size: 26px; font-weight: 700; margin-top: 2px; line-height: 1.2; word-break: keep-all; }
+.kpi .v small { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-left: 2px; }
+.kpi .d { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+/* 인사이트 */
+.insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.ins { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--skb-red); border-radius: 10px; padding: 14px 16px; }
+.ins.orange { border-left-color: var(--skb-orange); }
+.ins.gray { border-left-color: var(--text-muted); }
+.ins .tag { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 1px 8px; border-radius: 4px; margin-bottom: 6px; }
+.tag.bad { color: var(--status-bad); background: #FDECEA; }
+.tag.good { color: var(--status-good); background: #E8F4EC; }
+.tag.warn { color: var(--status-warn); background: #FDF1E3; }
+.tag.info { color: var(--text-secondary); background: #F1F3F4; }
+.ins h3 { margin: 0 0 6px; font-size: 15px; line-height: 1.4; word-break: keep-all; }
+.ins p { margin: 0; color: var(--text-secondary); font-size: 13px; word-break: keep-all; }
+.ins p b { color: var(--text-primary); }
+.ins .act { margin-top: 8px; font-size: 12.5px; color: var(--text-primary); }
+.ins .act::before { content: "→ 제안: "; font-weight: 700; color: var(--skb-red); }
+
+/* 카드·차트 */
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 12px; }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; min-width: 0; }
+.card h3 { margin: 0; font-size: 14.5px; }
+.card .cap { color: var(--text-secondary); font-size: 12px; margin: 2px 0 10px; }
+.chart { width: 100%; position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--text-secondary); margin: 0 0 8px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+details.tv { margin-top: 10px; font-size: 12.5px; }
+details.tv summary { cursor: pointer; color: var(--text-secondary); }
+.tbl-wrap { overflow-x: auto; margin-top: 6px; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 8px; border-bottom: 1px solid var(--border); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--text-secondary); font-weight: 600; background: #FAFBFC; }
+td.l, th.l { text-align: left; }
+
+/* 구성 막대 */
+.seg-row { margin: 10px 0 4px; }
+.seg-row .lbl { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 4px; display: flex; justify-content: space-between; gap: 8px; }
+.seg { display: flex; gap: 2px; height: 34px; }
+.seg div { border-radius: 4px; color: #fff; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden; min-width: 2px; cursor: default; }
+.seg div:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 1px; }
+
+/* 히트맵 */
+.heat { display: grid; gap: 2px; font-size: 12.5px; }
+.heat .h { color: var(--text-secondary); font-weight: 600; padding: 6px 4px; text-align: center; }
+.heat .rh { color: var(--text-primary); font-weight: 600; padding: 6px 4px; display: flex; align-items: center; }
+.heat .c { white-space: nowrap; border-radius: 4px; padding: 8px 2px; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; cursor: default; }
+.heat .c small { display: block; font-weight: 400; font-size: 11px; opacity: .9; }
+.scale { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-secondary); margin-top: 8px; }
+.scale .bar { height: 8px; width: 140px; border-radius: 4px; background: linear-gradient(90deg, #FDE8EC, #F59AAA, #EA002C, #8F001B); }
+
+.tooltip { position: fixed; pointer-events: none; z-index: 20; background: #202124; color: #fff; font-size: 12px; padding: 8px 10px; border-radius: 6px; line-height: 1.5; max-width: 260px; opacity: 0; transition: opacity .1s; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+.tooltip b { font-weight: 700; }
+.note-list { margin: 0; padding-left: 18px; color: var(--text-secondary); font-size: 13px; }
+.note-list li { margin: 4px 0; }
+.note-list b { color: var(--text-primary); }
+.flag { font-size: 11.5px; font-weight: 700; color: var(--status-warn); }
+footer { margin-top: 32px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 12px; }
+@media (max-width: 760px) { .filters { position: static; } }
+@media (max-width: 600px) {
+  h1 { font-size: 20px; }
+  .heat { font-size: 11.5px; }
+  .heat .h { font-size: 11px; padding: 4px 2px; word-break: keep-all; }
+  .meta { text-align: left; }
+  .kpi .v { font-size: 22px; }
+  .fstate { margin-left: 0; width: 100%; }
+}
+@media print { .filters { position: static; } details.tv { display: none; } }
+</style>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">SKB AI Camp · SK브로드밴드 실습</div>
+      <h1>4개 지역 8월 캠페인 실적 대시보드</h1>
+    </div>
+    <div class="meta">
+      기간 <b>2026-08-01 ~ 08-31</b> · 지역 <b>영남·충청·호남·강원제주</b><br>
+      기준 <b>확정(마감) 368건</b> · 금액 <b>원, 부가세 제외</b>
+    </div>
+  </header>
+  <p class="notice">교육용 가상 자료 · 실제 SK브로드밴드 실적 아님 · 출처: 03_실적데이터 지역별 원본 4개 파일 (원본 400행 → 통합 372행, 제외 28행) · 미마감 4건(368,100원)은 확정 집계에서 제외</p>
+
+  <h2>핵심 인사이트</h2>
+  <p class="sub">전체 확정 실적 기준이에요. 아래 필터는 차트와 지표에만 적용돼요.</p>
+  <div class="insights" id="insights"></div>
+
+  <div class="filters" role="group" aria-label="데이터 필터">
+    <div class="fgroup" data-key="region"><span>지역</span></div>
+    <div class="fgroup" data-key="act"><span>활동구분</span></div>
+    <div class="fgroup" data-key="prod"><span>상품</span></div>
+    <div class="fstate" id="fstate"></div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <h2>지역 비교</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>지역별 확정 집행비</h3>
+      <div class="cap">단위 원 · 막대 끝 숫자는 전체 대비 비중</div>
+      <div class="chart" id="c-region-amt"></div>
+      <details class="tv"><summary>표로 보기</summary><div class="tbl-wrap" id="t-region"></div></details>
+    </div>
+    <div class="card">
+      <h3>지역별 완료 1건당 비용</h3>
+      <div class="cap">집행비 ÷ 처리완료 건수 · 세로선은 선택 범위 평균</div>
+      <div class="chart" id="c-region-cpa"></div>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card">
+      <h3>지역별 상담 → 접수 전환율</h3>
+      <div class="cap">접수건 ÷ 상담 건수 · 지역 간 차이가 가장 큰 단계</div>
+      <div class="chart" id="c-region-appl"></div>
+    </div>
+    <div class="card">
+      <h3>지역별 접수 → 완료 전환율</h3>
+      <div class="cap">처리완료 ÷ 접수건 · 지역 간 차이가 거의 없는 단계</div>
+      <div class="chart" id="c-region-done"></div>
+    </div>
+  </div>
+
+  <h2>활동구분 비교</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>집행비 구성 vs 완료 건수 구성</h3>
+      <div class="cap">같은 활동이 돈을 얼마나 쓰고, 결과를 얼마나 냈는지 비중으로 비교</div>
+      <div class="legend" id="lg-act"></div>
+      <div id="c-act-seg"></div>
+      <details class="tv"><summary>표로 보기</summary><div class="tbl-wrap" id="t-act"></div></details>
+    </div>
+    <div class="card">
+      <h3>지역 × 활동구분 완료 1건당 비용</h3>
+      <div class="cap">단위 원 · 색이 진할수록 비용이 높아요 · 칸 아래 숫자는 완료 건수</div>
+      <div id="c-heat"></div>
+      <div class="scale"><span>낮음</span><span class="bar"></span><span>높음</span></div>
+    </div>
+  </div>
+
+  <h2>일별 추이</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>일별 확정 집행비</h3>
+      <div class="cap">단위 원 · 선택 범위 합계 (지역 하나를 고르면 그 지역 색)</div>
+      <div class="chart" id="c-daily-amt"></div>
+    </div>
+    <div class="card">
+      <h3>지역별 일별 처리완료 건수</h3>
+      <div class="cap">단위 건 · 8/31은 미마감 건이 빠져 낮게 보여요</div>
+      <div class="chart" id="c-daily-done"></div>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card">
+      <h3>요일별 하루 평균</h3>
+      <div class="cap">요일마다 8월 일수가 달라(4~5일) 하루 평균으로 비교</div>
+      <div class="tbl-wrap" id="t-weekday"></div>
+    </div>
+    <div class="card">
+      <h3>상품별 · 기간별 비교</h3>
+      <div class="cap">인터넷 vs 인터넷+B tv, 1~15일 vs 16~31일</div>
+      <div class="tbl-wrap" id="t-prod"></div>
+    </div>
+  </div>
+
+  <h2>점검이 필요한 건</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>완료 1건당 비용 상위 8건</h3>
+      <div class="cap">선택 범위의 개별 기록 기준 · 전체 기록 중앙값 9,394원</div>
+      <div class="tbl-wrap" id="t-top"></div>
+    </div>
+    <div class="card">
+      <h3>데이터 확인 사항</h3>
+      <ul class="note-list" id="notes"></ul>
+    </div>
+  </div>
+
+  <footer>SKB AI Camp 실습 결과물 · 교육용 가상 자료로 만든 대시보드예요. 수치는 03_실적데이터 원본 파일을 통합 규칙(기간 밖·완전 중복·이전 차수 제외, 단위 원·VAT 제외 환산)으로 다시 계산한 값이에요.</footer>
+</div>
+<div class="tooltip" id="tip" role="status" aria-live="polite"></div>
+
+<script>
+const DATA = {"rows":[{"region":"영남","date":"2026-08-01","act":"온라인안내","id":"SB26-YNG-0101","prod":"인터넷+B tv","amt":120600,"lead":121,"appl":21,"canc":2,"done":15},{"region":"영남","date":"2026-08-01","act":"현장상담","id":"SB26-YNG-0102","prod":"인터넷","amt":292400,"lead":42,"appl":7,"canc":1,"done":5},{"region":"영남","date":"2026-08-01","act":"기존고객안내","id":"SB26-YNG-0103","prod":"인터넷+B tv","amt":183900,"lead":84,"appl":19,"canc":0,"done":17},{"region":"영남","date":"2026-08-02","act":"온라인안내","id":"SB26-YNG-0201","prod":"인터넷","amt":123500,"lead":66,"appl":14,"canc":2,"done":10},{"region":"영남","date":"2026-08-02","act":"현장상담","id":"SB26-YNG-0202","prod":"인터넷+B tv","amt":400200,"lead":76,"appl":13,"canc":0,"done":10},{"region":"영남","date":"2026-08-02","act":"기존고객안내","id":"SB26-YNG-0203","prod":"인터넷","amt":174500,"lead":94,"appl":18,"canc":2,"done":13},{"region":"영남","date":"2026-08-03","act":"온라인안내","id":"SB26-YNG-0301","prod":"인터넷+B tv","amt":140900,"lead":102,"appl":15,"canc":1,"done":12},{"region":"영남","date":"2026-08-03","act":"현장상담","id":"SB26-YNG-0302","prod":"인터넷","amt":353400,"lead":97,"appl":17,"canc":2,"done":12},{"region":"영남","date":"2026-08-03","act":"기존고객안내","id":"SB26-YNG-0303","prod":"인터넷+B tv","amt":134400,"lead":76,"appl":16,"canc":2,"done":13},{"region":"영남","date":"2026-08-04","act":"온라인안내","id":"SB26-YNG-0401","prod":"인터넷","amt":208200,"lead":98,"appl":13,"canc":2,"done":8},{"region":"영남","date":"2026-08-04","act":"현장상담","id":"SB26-YNG-0402","prod":"인터넷+B tv","amt":340000,"lead":103,"appl":18,"canc":0,"done":15},{"region":"영남","date":"2026-08-04","act":"기존고객안내","id":"SB26-YNG-0403","prod":"인터넷","amt":155400,"lead":119,"appl":25,"canc":2,"done":20},{"region":"영남","date":"2026-08-05","act":"온라인안내","id":"SB26-YNG-0501","prod":"인터넷+B tv","amt":241600,"lead":81,"appl":13,"canc":1,"done":10},{"region":"영남","date":"2026-08-05","act":"현장상담","id":"SB26-YNG-0502","prod":"인터넷","amt":323400,"lead":102,"appl":19,"canc":3,"done":13},{"region":"영남","date":"2026-08-05","act":"기존고객안내","id":"SB26-YNG-0503","prod":"인터넷+B tv","amt":86300,"lead":108,"appl":20,"canc":1,"done":17},{"region":"영남","date":"2026-08-06","act":"온라인안내","id":"SB26-YNG-0601","prod":"인터넷","amt":207900,"lead":87,"appl":14,"canc":2,"done":11},{"region":"영남","date":"2026-08-06","act":"현장상담","id":"SB26-YNG-0602","prod":"인터넷+B tv","amt":365400,"lead":75,"appl":14,"canc":0,"done":13},{"region":"영남","date":"2026-08-06","act":"기존고객안내","id":"SB26-YNG-0603","prod":"인터넷","amt":20000,"lead":89,"appl":22,"canc":1,"done":19},{"region":"영남","date":"2026-08-07","act":"온라인안내","id":"SB26-YNG-0701","prod":"인터넷+B tv","amt":240400,"lead":113,"appl":16,"canc":0,"done":14},{"region":"영남","date":"2026-08-07","act":"현장상담","id":"SB26-YNG-0702","prod":"인터넷","amt":376800,"lead":54,"appl":11,"canc":2,"done":7},{"region":"영남","date":"2026-08-07","act":"기존고객안내","id":"SB26-YNG-0703","prod":"인터넷+B tv","amt":124400,"lead":89,"appl":20,"canc":1,"done":14},{"region":"영남","date":"2026-08-08","act":"온라인안내","id":"SB26-YNG-0801","prod":"인터넷","amt":147200,"lead":163,"appl":28,"canc":0,"done":24},{"region":"영남","date":"2026-08-08","act":"현장상담","id":"SB26-YNG-0802","prod":"인터넷+B tv","amt":246100,"lead":106,"appl":19,"canc":0,"done":16},{"region":"영남","date":"2026-08-08","act":"기존고객안내","id":"SB26-YNG-0803","prod":"인터넷","amt":168700,"lead":109,"appl":23,"canc":0,"done":21},{"region":"영남","date":"2026-08-09","act":"온라인안내","id":"SB26-YNG-0901","prod":"인터넷+B tv","amt":159100,"lead":81,"appl":10,"canc":2,"done":8},{"region":"영남","date":"2026-08-09","act":"현장상담","id":"SB26-YNG-0902","prod":"인터넷","amt":367800,"lead":94,"appl":16,"canc":0,"done":13},{"region":"영남","date":"2026-08-09","act":"기존고객안내","id":"SB26-YNG-0903","prod":"인터넷+B tv","amt":173500,"lead":112,"appl":25,"canc":3,"done":19},{"region":"영남","date":"2026-08-10","act":"온라인안내","id":"SB26-YNG-1001","prod":"인터넷","amt":167500,"lead":195,"appl":27,"canc":3,"done":23},{"region":"영남","date":"2026-08-10","act":"현장상담","id":"SB26-YNG-1002","prod":"인터넷+B tv","amt":240100,"lead":69,"appl":14,"canc":1,"done":11},{"region":"영남","date":"2026-08-10","act":"기존고객안내","id":"SB26-YNG-1003","prod":"인터넷","amt":105100,"lead":115,"appl":21,"canc":3,"done":16},{"region":"영남","date":"2026-08-11","act":"온라인안내","id":"SB26-YNG-1101","prod":"인터넷+B tv","amt":138600,"lead":68,"appl":9,"canc":0,"done":8},{"region":"영남","date":"2026-08-11","act":"현장상담","id":"SB26-YNG-1102","prod":"인터넷","amt":200100,"lead":74,"appl":13,"canc":2,"done":9},{"region":"영남","date":"2026-08-11","act":"기존고객안내","id":"SB26-YNG-1103","prod":"인터넷+B tv","amt":185000,"lead":89,"appl":18,"canc":2,"done":13},{"region":"영남","date":"2026-08-12","act":"온라인안내","id":"SB26-YNG-1201","prod":"인터넷","amt":181500,"lead":157,"appl":23,"canc":3,"done":17},{"region":"영남","date":"2026-08-12","act":"현장상담","id":"SB26-YNG-1202","prod":"인터넷+B tv","amt":226000,"lead":60,"appl":10,"canc":1,"done":8},{"region":"영남","date":"2026-08-12","act":"기존고객안내","id":"SB26-YNG-1203","prod":"인터넷","amt":132400,"lead":62,"appl":12,"canc":0,"done":11},{"region":"영남","date":"2026-08-13","act":"온라인안내","id":"SB26-YNG-1301","prod":"인터넷+B tv","amt":143100,"lead":93,"appl":15,"canc":2,"done":10},{"region":"영남","date":"2026-08-13","act":"현장상담","id":"SB26-YNG-1302","prod":"인터넷","amt":169100,"lead":44,"appl":8,"canc":1,"done":6},{"region":"영남","date":"2026-08-13","act":"기존고객안내","id":"SB26-YNG-1303","prod":"인터넷+B tv","amt":90500,"lead":70,"appl":13,"canc":0,"done":10},{"region":"영남","date":"2026-08-14","act":"온라인안내","id":"SB26-YNG-1401","prod":"인터넷","amt":212700,"lead":89,"appl":11,"canc":1,"done":8},{"region":"영남","date":"2026-08-14","act":"현장상담","id":"SB26-YNG-1402","prod":"인터넷+B tv","amt":270600,"lead":43,"appl":8,"canc":1,"done":5},{"region":"영남","date":"2026-08-14","act":"기존고객안내","id":"SB26-YNG-1403","prod":"인터넷","amt":176700,"lead":61,"appl":13,"canc":1,"done":9},{"region":"영남","date":"2026-08-15","act":"온라인안내","id":"SB26-YNG-1501","prod":"인터넷+B tv","amt":116700,"lead":68,"appl":10,"canc":1,"done":7},{"region":"영남","date":"2026-08-15","act":"현장상담","id":"SB26-YNG-1502","prod":"인터넷","amt":406500,"lead":77,"appl":13,"canc":1,"done":9},{"region":"영남","date":"2026-08-15","act":"기존고객안내","id":"SB26-YNG-1503","prod":"인터넷+B tv","amt":108700,"lead":112,"appl":21,"canc":3,"done":14},{"region":"영남","date":"2026-08-16","act":"온라인안내","id":"SB26-YNG-1601","prod":"인터넷","amt":144500,"lead":164,"appl":21,"canc":2,"done":15},{"region":"영남","date":"2026-08-16","act":"현장상담","id":"SB26-YNG-1602","prod":"인터넷+B tv","amt":171200,"lead":73,"appl":14,"canc":0,"done":11},{"region":"영남","date":"2026-08-16","act":"기존고객안내","id":"SB26-YNG-1603","prod":"인터넷","amt":153600,"lead":122,"appl":25,"canc":3,"done":20},{"region":"영남","date":"2026-08-17","act":"온라인안내","id":"SB26-YNG-1701","prod":"인터넷+B tv","amt":174200,"lead":140,"appl":20,"canc":1,"done":18},{"region":"영남","date":"2026-08-17","act":"현장상담","id":"SB26-YNG-1702","prod":"인터넷","amt":172300,"lead":92,"appl":19,"canc":3,"done":12},{"region":"영남","date":"2026-08-17","act":"기존고객안내","id":"SB26-YNG-1703","prod":"인터넷+B tv","amt":170500,"lead":51,"appl":10,"canc":2,"done":7},{"region":"영남","date":"2026-08-18","act":"온라인안내","id":"SB26-YNG-1801","prod":"인터넷","amt":205300,"lead":108,"appl":16,"canc":0,"done":14},{"region":"영남","date":"2026-08-18","act":"현장상담","id":"SB26-YNG-1802","prod":"인터넷+B tv","amt":329400,"lead":51,"appl":9,"canc":1,"done":6},{"region":"영남","date":"2026-08-18","act":"기존고객안내","id":"SB26-YNG-1803","prod":"인터넷","amt":137600,"lead":126,"appl":26,"canc":4,"done":20},{"region":"영남","date":"2026-08-19","act":"온라인안내","id":"SB26-YNG-1901","prod":"인터넷+B tv","amt":170100,"lead":113,"appl":14,"canc":0,"done":11},{"region":"영남","date":"2026-08-19","act":"현장상담","id":"SB26-YNG-1902","prod":"인터넷","amt":229500,"lead":96,"appl":18,"canc":0,"done":16},{"region":"영남","date":"2026-08-19","act":"기존고객안내","id":"SB26-YNG-1903","prod":"인터넷+B tv","amt":134000,"lead":61,"appl":12,"canc":2,"done":10},{"region":"영남","date":"2026-08-20","act":"온라인안내","id":"SB26-YNG-2001","prod":"인터넷","amt":156400,"lead":93,"appl":14,"canc":2,"done":11},{"region":"영남","date":"2026-08-20","act":"현장상담","id":"SB26-YNG-2002","prod":"인터넷+B tv","amt":189800,"lead":62,"appl":10,"canc":1,"done":8},{"region":"영남","date":"2026-08-20","act":"기존고객안내","id":"SB26-YNG-2003","prod":"인터넷","amt":127500,"lead":138,"appl":27,"canc":3,"done":18},{"region":"영남","date":"2026-08-21","act":"온라인안내","id":"SB26-YNG-2101","prod":"인터넷+B tv","amt":103600,"lead":81,"appl":13,"canc":0,"done":11},{"region":"영남","date":"2026-08-21","act":"현장상담","id":"SB26-YNG-2102","prod":"인터넷","amt":232800,"lead":59,"appl":11,"canc":1,"done":8},{"region":"영남","date":"2026-08-21","act":"기존고객안내","id":"SB26-YNG-2103","prod":"인터넷+B tv","amt":121000,"lead":138,"appl":31,"canc":2,"done":25},{"region":"영남","date":"2026-08-22","act":"온라인안내","id":"SB26-YNG-2201","prod":"인터넷","amt":203100,"lead":100,"appl":13,"canc":1,"done":9},{"region":"영남","date":"2026-08-22","act":"현장상담","id":"SB26-YNG-2202","prod":"인터넷+B tv","amt":343300,"lead":36,"appl":6,"canc":0,"done":4},{"region":"영남","date":"2026-08-22","act":"기존고객안내","id":"SB26-YNG-2203","prod":"인터넷","amt":151800,"lead":92,"appl":21,"canc":3,"done":17},{"region":"영남","date":"2026-08-23","act":"온라인안내","id":"SB26-YNG-2301","prod":"인터넷+B tv","amt":185300,"lead":123,"appl":21,"canc":2,"done":17},{"region":"영남","date":"2026-08-23","act":"현장상담","id":"SB26-YNG-2302","prod":"인터넷","amt":217000,"lead":38,"appl":7,"canc":0,"done":6},{"region":"영남","date":"2026-08-23","act":"기존고객안내","id":"SB26-YNG-2303","prod":"인터넷+B tv","amt":122400,"lead":139,"appl":31,"canc":3,"done":26},{"region":"영남","date":"2026-08-24","act":"온라인안내","id":"SB26-YNG-2401","prod":"인터넷","amt":227000,"lead":112,"appl":17,"canc":3,"done":10},{"region":"영남","date":"2026-08-24","act":"현장상담","id":"SB26-YNG-2402","prod":"인터넷+B tv","amt":384400,"lead":61,"appl":10,"canc":2,"done":7},{"region":"영남","date":"2026-08-24","act":"기존고객안내","id":"SB26-YNG-2403","prod":"인터넷","amt":163700,"lead":66,"appl":14,"canc":2,"done":11},{"region":"영남","date":"2026-08-25","act":"온라인안내","id":"SB26-YNG-2501","prod":"인터넷+B tv","amt":246000,"lead":102,"appl":14,"canc":0,"done":12},{"region":"영남","date":"2026-08-25","act":"현장상담","id":"SB26-YNG-2502","prod":"인터넷","amt":326200,"lead":80,"appl":15,"canc":0,"done":12},{"region":"영남","date":"2026-08-25","act":"기존고객안내","id":"SB26-YNG-2503","prod":"인터넷+B tv","amt":178200,"lead":70,"appl":13,"canc":2,"done":9},{"region":"영남","date":"2026-08-26","act":"온라인안내","id":"SB26-YNG-2601","prod":"인터넷","amt":142700,"lead":76,"appl":11,"canc":2,"done":7},{"region":"영남","date":"2026-08-26","act":"현장상담","id":"SB26-YNG-2602","prod":"인터넷+B tv","amt":194100,"lead":47,"appl":8,"canc":1,"done":6},{"region":"영남","date":"2026-08-26","act":"기존고객안내","id":"SB26-YNG-2603","prod":"인터넷","amt":127100,"lead":47,"appl":10,"canc":0,"done":8},{"region":"영남","date":"2026-08-27","act":"온라인안내","id":"SB26-YNG-2701","prod":"인터넷+B tv","amt":151600,"lead":134,"appl":22,"canc":2,"done":17},{"region":"영남","date":"2026-08-27","act":"현장상담","id":"SB26-YNG-2702","prod":"인터넷","amt":223800,"lead":78,"appl":16,"canc":1,"done":13},{"region":"영남","date":"2026-08-27","act":"기존고객안내","id":"SB26-YNG-2703","prod":"인터넷+B tv","amt":171600,"lead":123,"appl":22,"canc":4,"done":14},{"region":"영남","date":"2026-08-28","act":"온라인안내","id":"SB26-YNG-2801","prod":"인터넷","amt":156400,"lead":129,"appl":22,"canc":1,"done":17},{"region":"영남","date":"2026-08-28","act":"현장상담","id":"SB26-YNG-2802","prod":"인터넷+B tv","amt":387700,"lead":53,"appl":10,"canc":2,"done":6},{"region":"영남","date":"2026-08-28","act":"기존고객안내","id":"SB26-YNG-2803","prod":"인터넷","amt":77200,"lead":99,"appl":20,"canc":3,"done":16},{"region":"영남","date":"2026-08-29","act":"온라인안내","id":"SB26-YNG-2901","prod":"인터넷+B tv","amt":211900,"lead":157,"appl":21,"canc":3,"done":16},{"region":"영남","date":"2026-08-29","act":"현장상담","id":"SB26-YNG-2902","prod":"인터넷","amt":193800,"lead":49,"appl":9,"canc":1,"done":7},{"region":"영남","date":"2026-08-29","act":"기존고객안내","id":"SB26-YNG-2903","prod":"인터넷+B tv","amt":154100,"lead":68,"appl":15,"canc":0,"done":13},{"region":"영남","date":"2026-08-30","act":"온라인안내","id":"SB26-YNG-3001","prod":"인터넷","amt":240900,"lead":89,"appl":11,"canc":2,"done":7},{"region":"영남","date":"2026-08-30","act":"현장상담","id":"SB26-YNG-3002","prod":"인터넷+B tv","amt":366200,"lead":99,"appl":16,"canc":1,"done":12},{"region":"영남","date":"2026-08-30","act":"기존고객안내","id":"SB26-YNG-3003","prod":"인터넷","amt":153600,"lead":131,"appl":27,"canc":4,"done":20},{"region":"영남","date":"2026-08-31","act":"온라인안내","id":"SB26-YNG-3101","prod":"인터넷+B tv","amt":224100,"lead":102,"appl":13,"canc":1,"done":9},{"region":"영남","date":"2026-08-31","act":"현장상담","id":"SB26-YNG-3102","prod":"인터넷","amt":337600,"lead":40,"appl":7,"canc":0,"done":6},{"region":"충청","date":"2026-08-01","act":"온라인안내","id":"SB26-CHC-0101","prod":"인터넷+B tv","amt":121800,"lead":77,"appl":22,"canc":1,"done":16},{"region":"충청","date":"2026-08-01","act":"현장상담","id":"SB26-CHC-0102","prod":"인터넷","amt":177400,"lead":28,"appl":8,"canc":0,"done":6},{"region":"충청","date":"2026-08-01","act":"기존고객안내","id":"SB26-CHC-0103","prod":"인터넷+B tv","amt":46400,"lead":77,"appl":23,"canc":1,"done":17},{"region":"충청","date":"2026-08-02","act":"온라인안내","id":"SB26-CHC-0201","prod":"인터넷","amt":153900,"lead":56,"appl":17,"canc":0,"done":14},{"region":"충청","date":"2026-08-02","act":"현장상담","id":"SB26-CHC-0202","prod":"인터넷+B tv","amt":219300,"lead":43,"appl":14,"canc":1,"done":10},{"region":"충청","date":"2026-08-02","act":"기존고객안내","id":"SB26-CHC-0203","prod":"인터넷","amt":112200,"lead":100,"appl":34,"canc":5,"done":26},{"region":"충청","date":"2026-08-03","act":"온라인안내","id":"SB26-CHC-0301","prod":"인터넷+B tv","amt":86800,"lead":140,"appl":40,"canc":5,"done":30},{"region":"충청","date":"2026-08-03","act":"현장상담","id":"SB26-CHC-0302","prod":"인터넷","amt":121900,"lead":56,"appl":17,"canc":1,"done":12},{"region":"충청","date":"2026-08-03","act":"기존고객안내","id":"SB26-CHC-0303","prod":"인터넷+B tv","amt":49800,"lead":90,"appl":28,"canc":1,"done":23},{"region":"충청","date":"2026-08-04","act":"온라인안내","id":"SB26-CHC-0401","prod":"인터넷","amt":123200,"lead":61,"appl":16,"canc":0,"done":13},{"region":"충청","date":"2026-08-04","act":"현장상담","id":"SB26-CHC-0402","prod":"인터넷+B tv","amt":141600,"lead":65,"appl":21,"canc":1,"done":16},{"region":"충청","date":"2026-08-04","act":"기존고객안내","id":"SB26-CHC-0403","prod":"인터넷","amt":100200,"lead":90,"appl":29,"canc":2,"done":24},{"region":"충청","date":"2026-08-05","act":"온라인안내","id":"SB26-CHC-0501","prod":"인터넷+B tv","amt":143000,"lead":126,"appl":34,"canc":4,"done":24},{"region":"충청","date":"2026-08-05","act":"현장상담","id":"SB26-CHC-0502","prod":"인터넷","amt":156900,"lead":50,"appl":16,"canc":2,"done":13},{"region":"충청","date":"2026-08-05","act":"기존고객안내","id":"SB26-CHC-0503","prod":"인터넷+B tv","amt":66100,"lead":88,"appl":30,"canc":3,"done":20},{"region":"충청","date":"2026-08-06","act":"온라인안내","id":"SB26-CHC-0601","prod":"인터넷","amt":82200,"lead":49,"appl":13,"canc":0,"done":11},{"region":"충청","date":"2026-08-06","act":"현장상담","id":"SB26-CHC-0602","prod":"인터넷+B tv","amt":138400,"lead":56,"appl":17,"canc":2,"done":12},{"region":"충청","date":"2026-08-06","act":"기존고객안내","id":"SB26-CHC-0603","prod":"인터넷","amt":20000,"lead":45,"appl":18,"canc":1,"done":13},{"region":"충청","date":"2026-08-07","act":"온라인안내","id":"SB26-CHC-0701","prod":"인터넷+B tv","amt":81500,"lead":101,"appl":28,"canc":3,"done":23},{"region":"충청","date":"2026-08-07","act":"현장상담","id":"SB26-CHC-0702","prod":"인터넷","amt":232500,"lead":64,"appl":20,"canc":1,"done":15},{"region":"충청","date":"2026-08-07","act":"기존고객안내","id":"SB26-CHC-0703","prod":"인터넷+B tv","amt":63800,"lead":38,"appl":12,"canc":2,"done":9},{"region":"충청","date":"2026-08-08","act":"온라인안내","id":"SB26-CHC-0801","prod":"인터넷","amt":108900,"lead":74,"appl":20,"canc":3,"done":16},{"region":"충청","date":"2026-08-08","act":"현장상담","id":"SB26-CHC-0802","prod":"인터넷+B tv","amt":177400,"lead":67,"appl":21,"canc":3,"done":15},{"region":"충청","date":"2026-08-08","act":"기존고객안내","id":"SB26-CHC-0803","prod":"인터넷","amt":112000,"lead":49,"appl":17,"canc":1,"done":15},{"region":"충청","date":"2026-08-09","act":"온라인안내","id":"SB26-CHC-0901","prod":"인터넷+B tv","amt":148900,"lead":48,"appl":12,"canc":2,"done":8},{"region":"충청","date":"2026-08-09","act":"현장상담","id":"SB26-CHC-0902","prod":"인터넷","amt":173400,"lead":71,"appl":22,"canc":3,"done":14},{"region":"충청","date":"2026-08-09","act":"기존고객안내","id":"SB26-CHC-0903","prod":"인터넷+B tv","amt":83900,"lead":36,"appl":11,"canc":0,"done":8},{"region":"충청","date":"2026-08-10","act":"온라인안내","id":"SB26-CHC-1001","prod":"인터넷","amt":131600,"lead":136,"appl":36,"canc":4,"done":25},{"region":"충청","date":"2026-08-10","act":"현장상담","id":"SB26-CHC-1002","prod":"인터넷+B tv","amt":218500,"lead":27,"appl":8,"canc":0,"done":7},{"region":"충청","date":"2026-08-10","act":"기존고객안내","id":"SB26-CHC-1003","prod":"인터넷","amt":79200,"lead":48,"appl":16,"canc":2,"done":11},{"region":"충청","date":"2026-08-11","act":"온라인안내","id":"SB26-CHC-1101","prod":"인터넷+B tv","amt":112100,"lead":114,"appl":29,"canc":4,"done":19},{"region":"충청","date":"2026-08-11","act":"현장상담","id":"SB26-CHC-1102","prod":"인터넷","amt":111700,"lead":52,"appl":16,"canc":2,"done":13},{"region":"충청","date":"2026-08-11","act":"기존고객안내","id":"SB26-CHC-1103","prod":"인터넷+B tv","amt":107800,"lead":63,"appl":21,"canc":1,"done":15},{"region":"충청","date":"2026-08-12","act":"온라인안내","id":"SB26-CHC-1201","prod":"인터넷","amt":113900,"lead":132,"appl":35,"canc":5,"done":24},{"region":"충청","date":"2026-08-12","act":"현장상담","id":"SB26-CHC-1202","prod":"인터넷+B tv","amt":222900,"lead":48,"appl":14,"canc":1,"done":12},{"region":"충청","date":"2026-08-12","act":"기존고객안내","id":"SB26-CHC-1203","prod":"인터넷","amt":89700,"lead":58,"appl":19,"canc":2,"done":15},{"region":"충청","date":"2026-08-13","act":"온라인안내","id":"SB26-CHC-1301","prod":"인터넷+B tv","amt":124400,"lead":68,"appl":19,"canc":3,"done":15},{"region":"충청","date":"2026-08-13","act":"현장상담","id":"SB26-CHC-1302","prod":"인터넷","amt":244200,"lead":28,"appl":8,"canc":0,"done":8},{"region":"충청","date":"2026-08-13","act":"기존고객안내","id":"SB26-CHC-1303","prod":"인터넷+B tv","amt":45700,"lead":39,"appl":12,"canc":2,"done":7},{"region":"충청","date":"2026-08-14","act":"온라인안내","id":"SB26-CHC-1401","prod":"인터넷","amt":129700,"lead":106,"appl":29,"canc":4,"done":20},{"region":"충청","date":"2026-08-14","act":"현장상담","id":"SB26-CHC-1402","prod":"인터넷+B tv","amt":101300,"lead":29,"appl":9,"canc":1,"done":8},{"region":"충청","date":"2026-08-14","act":"기존고객안내","id":"SB26-CHC-1403","prod":"인터넷","amt":90700,"lead":97,"appl":32,"canc":2,"done":27},{"region":"충청","date":"2026-08-15","act":"온라인안내","id":"SB26-CHC-1501","prod":"인터넷+B tv","amt":89500,"lead":112,"appl":31,"canc":2,"done":25},{"region":"충청","date":"2026-08-15","act":"현장상담","id":"SB26-CHC-1502","prod":"인터넷","amt":210200,"lead":37,"appl":12,"canc":1,"done":9},{"region":"충청","date":"2026-08-15","act":"기존고객안내","id":"SB26-CHC-1503","prod":"인터넷+B tv","amt":68300,"lead":49,"appl":15,"canc":0,"done":13},{"region":"충청","date":"2026-08-16","act":"온라인안내","id":"SB26-CHC-1601","prod":"인터넷","amt":118900,"lead":88,"appl":25,"canc":3,"done":17},{"region":"충청","date":"2026-08-16","act":"현장상담","id":"SB26-CHC-1602","prod":"인터넷+B tv","amt":117200,"lead":28,"appl":9,"canc":0,"done":8},{"region":"충청","date":"2026-08-16","act":"기존고객안내","id":"SB26-CHC-1603","prod":"인터넷","amt":111800,"lead":97,"appl":30,"canc":2,"done":27},{"region":"충청","date":"2026-08-17","act":"온라인안내","id":"SB26-CHC-1701","prod":"인터넷+B tv","amt":78300,"lead":64,"appl":16,"canc":2,"done":12},{"region":"충청","date":"2026-08-17","act":"현장상담","id":"SB26-CHC-1702","prod":"인터넷","amt":154600,"lead":33,"appl":9,"canc":1,"done":7},{"region":"충청","date":"2026-08-17","act":"기존고객안내","id":"SB26-CHC-1703","prod":"인터넷+B tv","amt":102300,"lead":93,"appl":31,"canc":3,"done":22},{"region":"충청","date":"2026-08-18","act":"온라인안내","id":"SB26-CHC-1801","prod":"인터넷","amt":140100,"lead":86,"appl":24,"canc":2,"done":18},{"region":"충청","date":"2026-08-18","act":"현장상담","id":"SB26-CHC-1802","prod":"인터넷+B tv","amt":230500,"lead":38,"appl":11,"canc":1,"done":9},{"region":"충청","date":"2026-08-18","act":"기존고객안내","id":"SB26-CHC-1803","prod":"인터넷","amt":60500,"lead":52,"appl":17,"canc":0,"done":13},{"region":"충청","date":"2026-08-19","act":"온라인안내","id":"SB26-CHC-1901","prod":"인터넷+B tv","amt":124600,"lead":94,"appl":26,"canc":4,"done":18},{"region":"충청","date":"2026-08-19","act":"현장상담","id":"SB26-CHC-1902","prod":"인터넷","amt":113400,"lead":42,"appl":14,"canc":2,"done":9},{"region":"충청","date":"2026-08-19","act":"기존고객안내","id":"SB26-CHC-1903","prod":"인터넷+B tv","amt":87000,"lead":69,"appl":22,"canc":2,"done":19},{"region":"충청","date":"2026-08-20","act":"온라인안내","id":"SB26-CHC-2001","prod":"인터넷","amt":90600,"lead":49,"appl":12,"canc":2,"done":8},{"region":"충청","date":"2026-08-20","act":"현장상담","id":"SB26-CHC-2002","prod":"인터넷+B tv","amt":146500,"lead":36,"appl":10,"canc":0,"done":7},{"region":"충청","date":"2026-08-20","act":"기존고객안내","id":"SB26-CHC-2003","prod":"인터넷","amt":46300,"lead":54,"appl":18,"canc":1,"done":14},{"region":"충청","date":"2026-08-21","act":"온라인안내","id":"SB26-CHC-2101","prod":"인터넷+B tv","amt":67600,"lead":105,"appl":31,"canc":3,"done":22},{"region":"충청","date":"2026-08-21","act":"현장상담","id":"SB26-CHC-2102","prod":"인터넷","amt":167600,"lead":71,"appl":22,"canc":0,"done":16},{"region":"충청","date":"2026-08-21","act":"기존고객안내","id":"SB26-CHC-2103","prod":"인터넷+B tv","amt":99300,"lead":95,"appl":30,"canc":3,"done":24},{"region":"충청","date":"2026-08-22","act":"온라인안내","id":"SB26-CHC-2201","prod":"인터넷","amt":79800,"lead":60,"appl":15,"canc":0,"done":11},{"region":"충청","date":"2026-08-22","act":"현장상담","id":"SB26-CHC-2202","prod":"인터넷+B tv","amt":230700,"lead":68,"appl":19,"canc":2,"done":12},{"region":"충청","date":"2026-08-22","act":"기존고객안내","id":"SB26-CHC-2203","prod":"인터넷","amt":107500,"lead":64,"appl":19,"canc":3,"done":12},{"region":"충청","date":"2026-08-23","act":"온라인안내","id":"SB26-CHC-2301","prod":"인터넷+B tv","amt":142300,"lead":70,"appl":20,"canc":3,"done":13},{"region":"충청","date":"2026-08-23","act":"현장상담","id":"SB26-CHC-2302","prod":"인터넷","amt":180000,"lead":31,"appl":9,"canc":0,"done":8},{"region":"충청","date":"2026-08-23","act":"기존고객안내","id":"SB26-CHC-2303","prod":"인터넷+B tv","amt":50200,"lead":67,"appl":21,"canc":1,"done":19},{"region":"충청","date":"2026-08-24","act":"온라인안내","id":"SB26-CHC-2401","prod":"인터넷","amt":102400,"lead":104,"appl":28,"canc":4,"done":21},{"region":"충청","date":"2026-08-24","act":"현장상담","id":"SB26-CHC-2402","prod":"인터넷+B tv","amt":224600,"lead":72,"appl":22,"canc":1,"done":17},{"region":"충청","date":"2026-08-24","act":"기존고객안내","id":"SB26-CHC-2403","prod":"인터넷","amt":77600,"lead":79,"appl":26,"canc":0,"done":22},{"region":"충청","date":"2026-08-25","act":"온라인안내","id":"SB26-CHC-2501","prod":"인터넷+B tv","amt":78000,"lead":112,"appl":29,"canc":3,"done":22},{"region":"충청","date":"2026-08-25","act":"현장상담","id":"SB26-CHC-2502","prod":"인터넷","amt":178400,"lead":61,"appl":18,"canc":3,"done":11},{"region":"충청","date":"2026-08-25","act":"기존고객안내","id":"SB26-CHC-2503","prod":"인터넷+B tv","amt":79400,"lead":71,"appl":24,"canc":1,"done":17},{"region":"충청","date":"2026-08-26","act":"온라인안내","id":"SB26-CHC-2601","prod":"인터넷","amt":87100,"lead":90,"appl":26,"canc":0,"done":23},{"region":"충청","date":"2026-08-26","act":"현장상담","id":"SB26-CHC-2602","prod":"인터넷+B tv","amt":215000,"lead":64,"appl":21,"canc":0,"done":17},{"region":"충청","date":"2026-08-26","act":"기존고객안내","id":"SB26-CHC-2603","prod":"인터넷","amt":102400,"lead":100,"appl":34,"canc":2,"done":24},{"region":"충청","date":"2026-08-27","act":"온라인안내","id":"SB26-CHC-2701","prod":"인터넷+B tv","amt":122800,"lead":102,"appl":25,"canc":1,"done":18},{"region":"충청","date":"2026-08-27","act":"현장상담","id":"SB26-CHC-2702","prod":"인터넷","amt":132800,"lead":61,"appl":20,"canc":2,"done":15},{"region":"충청","date":"2026-08-27","act":"기존고객안내","id":"SB26-CHC-2703","prod":"인터넷+B tv","amt":94200,"lead":58,"appl":18,"canc":1,"done":16},{"region":"충청","date":"2026-08-28","act":"온라인안내","id":"SB26-CHC-2801","prod":"인터넷","amt":116600,"lead":113,"appl":33,"canc":1,"done":24},{"region":"충청","date":"2026-08-28","act":"현장상담","id":"SB26-CHC-2802","prod":"인터넷+B tv","amt":160500,"lead":32,"appl":10,"canc":1,"done":8},{"region":"충청","date":"2026-08-28","act":"기존고객안내","id":"SB26-CHC-2803","prod":"인터넷","amt":59700,"lead":80,"appl":26,"canc":0,"done":22},{"region":"충청","date":"2026-08-29","act":"온라인안내","id":"SB26-CHC-2901","prod":"인터넷+B tv","amt":115000,"lead":125,"appl":36,"canc":1,"done":28},{"region":"충청","date":"2026-08-29","act":"현장상담","id":"SB26-CHC-2902","prod":"인터넷","amt":104400,"lead":71,"appl":22,"canc":4,"done":15},{"region":"충청","date":"2026-08-29","act":"기존고객안내","id":"SB26-CHC-2903","prod":"인터넷+B tv","amt":92700,"lead":77,"appl":24,"canc":2,"done":19},{"region":"충청","date":"2026-08-30","act":"온라인안내","id":"SB26-CHC-3001","prod":"인터넷","amt":88600,"lead":100,"appl":25,"canc":3,"done":20},{"region":"충청","date":"2026-08-30","act":"현장상담","id":"SB26-CHC-3002","prod":"인터넷+B tv","amt":235000,"lead":63,"appl":19,"canc":3,"done":12},{"region":"충청","date":"2026-08-30","act":"기존고객안내","id":"SB26-CHC-3003","prod":"인터넷","amt":70600,"lead":45,"appl":15,"canc":2,"done":10},{"region":"충청","date":"2026-08-31","act":"온라인안내","id":"SB26-CHC-3101","prod":"인터넷+B tv","amt":68200,"lead":86,"appl":24,"canc":0,"done":22},{"region":"충청","date":"2026-08-31","act":"현장상담","id":"SB26-CHC-3102","prod":"인터넷","amt":126100,"lead":66,"appl":20,"canc":1,"done":15},{"region":"호남","date":"2026-08-01","act":"온라인안내","id":"SB26-HON-0101","prod":"인터넷+B tv","amt":79000,"lead":96,"appl":23,"canc":2,"done":19},{"region":"호남","date":"2026-08-01","act":"현장상담","id":"SB26-HON-0102","prod":"인터넷","amt":151300,"lead":26,"appl":7,"canc":0,"done":6},{"region":"호남","date":"2026-08-01","act":"기존고객안내","id":"SB26-HON-0103","prod":"인터넷+B tv","amt":52800,"lead":66,"appl":21,"canc":0,"done":17},{"region":"호남","date":"2026-08-02","act":"온라인안내","id":"SB26-HON-0201","prod":"인터넷","amt":142800,"lead":82,"appl":23,"canc":2,"done":16},{"region":"호남","date":"2026-08-02","act":"현장상담","id":"SB26-HON-0202","prod":"인터넷+B tv","amt":179100,"lead":59,"appl":16,"canc":2,"done":11},{"region":"호남","date":"2026-08-02","act":"기존고객안내","id":"SB26-HON-0203","prod":"인터넷","amt":62200,"lead":57,"appl":18,"canc":2,"done":13},{"region":"호남","date":"2026-08-03","act":"온라인안내","id":"SB26-HON-0301","prod":"인터넷+B tv","amt":95400,"lead":79,"appl":20,"canc":0,"done":19},{"region":"호남","date":"2026-08-03","act":"현장상담","id":"SB26-HON-0302","prod":"인터넷","amt":197100,"lead":62,"appl":17,"canc":1,"done":15},{"region":"호남","date":"2026-08-03","act":"기존고객안내","id":"SB26-HON-0303","prod":"인터넷+B tv","amt":62300,"lead":65,"appl":18,"canc":0,"done":15},{"region":"호남","date":"2026-08-04","act":"온라인안내","id":"SB26-HON-0401","prod":"인터넷","amt":58000,"lead":109,"appl":24,"canc":2,"done":20},{"region":"호남","date":"2026-08-04","act":"현장상담","id":"SB26-HON-0402","prod":"인터넷+B tv","amt":117400,"lead":35,"appl":9,"canc":1,"done":7},{"region":"호남","date":"2026-08-04","act":"기존고객안내","id":"SB26-HON-0403","prod":"인터넷","amt":76600,"lead":43,"appl":12,"canc":1,"done":9},{"region":"호남","date":"2026-08-05","act":"온라인안내","id":"SB26-HON-0501","prod":"인터넷+B tv","amt":50100,"lead":58,"appl":13,"canc":1,"done":11},{"region":"호남","date":"2026-08-05","act":"현장상담","id":"SB26-HON-0502","prod":"인터넷","amt":151400,"lead":34,"appl":10,"canc":1,"done":9},{"region":"호남","date":"2026-08-05","act":"기존고객안내","id":"SB26-HON-0503","prod":"인터넷+B tv","amt":66400,"lead":86,"appl":25,"canc":3,"done":16},{"region":"호남","date":"2026-08-06","act":"온라인안내","id":"SB26-HON-0601","prod":"인터넷","amt":105800,"lead":69,"appl":16,"canc":2,"done":11},{"region":"호남","date":"2026-08-06","act":"현장상담","id":"SB26-HON-0602","prod":"인터넷+B tv","amt":200800,"lead":33,"appl":9,"canc":1,"done":6},{"region":"호남","date":"2026-08-06","act":"기존고객안내","id":"SB26-HON-0603","prod":"인터넷","amt":20000,"lead":64,"appl":23,"canc":3,"done":15},{"region":"호남","date":"2026-08-07","act":"온라인안내","id":"SB26-HON-0701","prod":"인터넷+B tv","amt":87800,"lead":93,"appl":21,"canc":2,"done":16},{"region":"호남","date":"2026-08-07","act":"현장상담","id":"SB26-HON-0702","prod":"인터넷","amt":110700,"lead":38,"appl":11,"canc":1,"done":8},{"region":"호남","date":"2026-08-07","act":"기존고객안내","id":"SB26-HON-0703","prod":"인터넷+B tv","amt":75400,"lead":71,"appl":22,"canc":1,"done":16},{"region":"호남","date":"2026-08-08","act":"온라인안내","id":"SB26-HON-0801","prod":"인터넷","amt":69800,"lead":108,"appl":28,"canc":3,"done":22},{"region":"호남","date":"2026-08-08","act":"현장상담","id":"SB26-HON-0802","prod":"인터넷+B tv","amt":152300,"lead":59,"appl":17,"canc":2,"done":12},{"region":"호남","date":"2026-08-08","act":"기존고객안내","id":"SB26-HON-0803","prod":"인터넷","amt":38000,"lead":88,"appl":24,"canc":4,"done":15},{"region":"호남","date":"2026-08-09","act":"온라인안내","id":"SB26-HON-0901","prod":"인터넷+B tv","amt":92200,"lead":120,"appl":27,"canc":2,"done":19},{"region":"호남","date":"2026-08-09","act":"현장상담","id":"SB26-HON-0902","prod":"인터넷","amt":175600,"lead":36,"appl":10,"canc":2,"done":6},{"region":"호남","date":"2026-08-09","act":"기존고객안내","id":"SB26-HON-0903","prod":"인터넷+B tv","amt":68800,"lead":54,"appl":17,"canc":3,"done":11},{"region":"호남","date":"2026-08-10","act":"온라인안내","id":"SB26-HON-1001","prod":"인터넷","amt":56700,"lead":99,"appl":24,"canc":4,"done":15},{"region":"호남","date":"2026-08-10","act":"현장상담","id":"SB26-HON-1002","prod":"인터넷+B tv","amt":176300,"lead":62,"appl":18,"canc":2,"done":14},{"region":"호남","date":"2026-08-10","act":"기존고객안내","id":"SB26-HON-1003","prod":"인터넷","amt":79700,"lead":53,"appl":15,"canc":0,"done":14},{"region":"호남","date":"2026-08-11","act":"온라인안내","id":"SB26-HON-1101","prod":"인터넷+B tv","amt":105700,"lead":67,"appl":17,"canc":1,"done":13},{"region":"호남","date":"2026-08-11","act":"현장상담","id":"SB26-HON-1102","prod":"인터넷","amt":111100,"lead":29,"appl":8,"canc":1,"done":7},{"region":"호남","date":"2026-08-11","act":"기존고객안내","id":"SB26-HON-1103","prod":"인터넷+B tv","amt":53500,"lead":78,"appl":23,"canc":1,"done":17},{"region":"호남","date":"2026-08-12","act":"온라인안내","id":"SB26-HON-1201","prod":"인터넷","amt":88300,"lead":115,"appl":27,"canc":1,"done":22},{"region":"호남","date":"2026-08-12","act":"현장상담","id":"SB26-HON-1202","prod":"인터넷+B tv","amt":145000,"lead":48,"appl":12,"canc":1,"done":9},{"region":"호남","date":"2026-08-12","act":"기존고객안내","id":"SB26-HON-1203","prod":"인터넷","amt":54100,"lead":71,"appl":22,"canc":3,"done":14},{"region":"호남","date":"2026-08-13","act":"온라인안내","id":"SB26-HON-1301","prod":"인터넷+B tv","amt":60800,"lead":76,"appl":17,"canc":1,"done":13},{"region":"호남","date":"2026-08-13","act":"현장상담","id":"SB26-HON-1302","prod":"인터넷","amt":149600,"lead":33,"appl":9,"canc":0,"done":9},{"region":"호남","date":"2026-08-13","act":"기존고객안내","id":"SB26-HON-1303","prod":"인터넷+B tv","amt":50700,"lead":88,"appl":28,"canc":3,"done":20},{"region":"호남","date":"2026-08-14","act":"온라인안내","id":"SB26-HON-1401","prod":"인터넷","amt":109500,"lead":90,"appl":21,"canc":2,"done":16},{"region":"호남","date":"2026-08-14","act":"현장상담","id":"SB26-HON-1402","prod":"인터넷+B tv","amt":190800,"lead":49,"appl":12,"canc":2,"done":8},{"region":"호남","date":"2026-08-14","act":"기존고객안내","id":"SB26-HON-1403","prod":"인터넷","amt":86200,"lead":67,"appl":21,"canc":2,"done":18},{"region":"호남","date":"2026-08-15","act":"온라인안내","id":"SB26-HON-1501","prod":"인터넷+B tv","amt":96600,"lead":118,"appl":30,"canc":4,"done":20},{"region":"호남","date":"2026-08-15","act":"현장상담","id":"SB26-HON-1502","prod":"인터넷","amt":88900,"lead":24,"appl":6,"canc":0,"done":5},{"region":"호남","date":"2026-08-15","act":"기존고객안내","id":"SB26-HON-1503","prod":"인터넷+B tv","amt":58700,"lead":57,"appl":17,"canc":1,"done":15},{"region":"호남","date":"2026-08-16","act":"온라인안내","id":"SB26-HON-1601","prod":"인터넷","amt":95300,"lead":49,"appl":12,"canc":2,"done":9},{"region":"호남","date":"2026-08-16","act":"현장상담","id":"SB26-HON-1602","prod":"인터넷+B tv","amt":145700,"lead":61,"appl":16,"canc":2,"done":12},{"region":"호남","date":"2026-08-16","act":"기존고객안내","id":"SB26-HON-1603","prod":"인터넷","amt":52900,"lead":77,"appl":24,"canc":2,"done":16},{"region":"호남","date":"2026-08-17","act":"온라인안내","id":"SB26-HON-1701","prod":"인터넷+B tv","amt":73800,"lead":59,"appl":15,"canc":1,"done":12},{"region":"호남","date":"2026-08-17","act":"현장상담","id":"SB26-HON-1702","prod":"인터넷","amt":163400,"lead":52,"appl":15,"canc":1,"done":12},{"region":"호남","date":"2026-08-17","act":"기존고객안내","id":"SB26-HON-1703","prod":"인터넷+B tv","amt":83300,"lead":31,"appl":9,"canc":1,"done":7},{"region":"호남","date":"2026-08-18","act":"온라인안내","id":"SB26-HON-1801","prod":"인터넷","amt":78200,"lead":118,"appl":31,"canc":0,"done":24},{"region":"호남","date":"2026-08-18","act":"현장상담","id":"SB26-HON-1802","prod":"인터넷+B tv","amt":189000,"lead":39,"appl":10,"canc":2,"done":7},{"region":"호남","date":"2026-08-18","act":"기존고객안내","id":"SB26-HON-1803","prod":"인터넷","amt":57400,"lead":84,"appl":24,"canc":0,"done":20},{"region":"호남","date":"2026-08-19","act":"온라인안내","id":"SB26-HON-1901","prod":"인터넷+B tv","amt":71200,"lead":61,"appl":15,"canc":1,"done":10},{"region":"호남","date":"2026-08-19","act":"현장상담","id":"SB26-HON-1902","prod":"인터넷","amt":193100,"lead":33,"appl":10,"canc":2,"done":7},{"region":"호남","date":"2026-08-19","act":"기존고객안내","id":"SB26-HON-1903","prod":"인터넷+B tv","amt":55200,"lead":74,"appl":23,"canc":0,"done":21},{"region":"호남","date":"2026-08-20","act":"온라인안내","id":"SB26-HON-2001","prod":"인터넷","amt":62100,"lead":100,"appl":26,"canc":4,"done":20},{"region":"호남","date":"2026-08-20","act":"현장상담","id":"SB26-HON-2002","prod":"인터넷+B tv","amt":118900,"lead":50,"appl":14,"canc":1,"done":11},{"region":"호남","date":"2026-08-20","act":"기존고객안내","id":"SB26-HON-2003","prod":"인터넷","amt":76900,"lead":60,"appl":17,"canc":2,"done":11},{"region":"호남","date":"2026-08-21","act":"온라인안내","id":"SB26-HON-2101","prod":"인터넷+B tv","amt":108600,"lead":45,"appl":11,"canc":1,"done":8},{"region":"호남","date":"2026-08-21","act":"현장상담","id":"SB26-HON-2102","prod":"인터넷","amt":95900,"lead":60,"appl":16,"canc":2,"done":11},{"region":"호남","date":"2026-08-21","act":"기존고객안내","id":"SB26-HON-2103","prod":"인터넷+B tv","amt":61800,"lead":76,"appl":23,"canc":4,"done":14},{"region":"호남","date":"2026-08-22","act":"온라인안내","id":"SB26-HON-2201","prod":"인터넷","amt":96400,"lead":100,"appl":23,"canc":4,"done":14},{"region":"호남","date":"2026-08-22","act":"현장상담","id":"SB26-HON-2202","prod":"인터넷+B tv","amt":172000,"lead":58,"appl":16,"canc":0,"done":13},{"region":"호남","date":"2026-08-22","act":"기존고객안내","id":"SB26-HON-2203","prod":"인터넷","amt":62700,"lead":55,"appl":15,"canc":2,"done":12},{"region":"호남","date":"2026-08-23","act":"온라인안내","id":"SB26-HON-2301","prod":"인터넷+B tv","amt":70900,"lead":44,"appl":11,"canc":2,"done":9},{"region":"호남","date":"2026-08-23","act":"현장상담","id":"SB26-HON-2302","prod":"인터넷","amt":196600,"lead":54,"appl":15,"canc":0,"done":12},{"region":"호남","date":"2026-08-23","act":"기존고객안내","id":"SB26-HON-2303","prod":"인터넷+B tv","amt":73400,"lead":84,"appl":23,"canc":0,"done":21},{"region":"호남","date":"2026-08-24","act":"온라인안내","id":"SB26-HON-2401","prod":"인터넷","amt":68200,"lead":73,"appl":17,"canc":1,"done":13},{"region":"호남","date":"2026-08-24","act":"현장상담","id":"SB26-HON-2402","prod":"인터넷+B tv","amt":124200,"lead":59,"appl":17,"canc":1,"done":15},{"region":"호남","date":"2026-08-24","act":"기존고객안내","id":"SB26-HON-2403","prod":"인터넷","amt":55000,"lead":42,"appl":12,"canc":1,"done":10},{"region":"호남","date":"2026-08-25","act":"온라인안내","id":"SB26-HON-2501","prod":"인터넷+B tv","amt":75900,"lead":77,"appl":18,"canc":2,"done":13},{"region":"호남","date":"2026-08-25","act":"현장상담","id":"SB26-HON-2502","prod":"인터넷","amt":185200,"lead":41,"appl":11,"canc":1,"done":8},{"region":"호남","date":"2026-08-25","act":"기존고객안내","id":"SB26-HON-2503","prod":"인터넷+B tv","amt":43400,"lead":48,"appl":14,"canc":1,"done":11},{"region":"호남","date":"2026-08-26","act":"온라인안내","id":"SB26-HON-2601","prod":"인터넷","amt":91300,"lead":73,"appl":16,"canc":1,"done":14},{"region":"호남","date":"2026-08-26","act":"현장상담","id":"SB26-HON-2602","prod":"인터넷+B tv","amt":145900,"lead":59,"appl":18,"canc":3,"done":13},{"region":"호남","date":"2026-08-26","act":"기존고객안내","id":"SB26-HON-2603","prod":"인터넷","amt":46500,"lead":89,"appl":28,"canc":2,"done":20},{"region":"호남","date":"2026-08-27","act":"온라인안내","id":"SB26-HON-2701","prod":"인터넷+B tv","amt":63500,"lead":51,"appl":12,"canc":0,"done":11},{"region":"호남","date":"2026-08-27","act":"현장상담","id":"SB26-HON-2702","prod":"인터넷","amt":132900,"lead":48,"appl":13,"canc":2,"done":11},{"region":"호남","date":"2026-08-27","act":"기존고객안내","id":"SB26-HON-2703","prod":"인터넷+B tv","amt":56500,"lead":54,"appl":15,"canc":1,"done":11},{"region":"호남","date":"2026-08-28","act":"온라인안내","id":"SB26-HON-2801","prod":"인터넷","amt":118200,"lead":76,"appl":16,"canc":3,"done":10},{"region":"호남","date":"2026-08-28","act":"현장상담","id":"SB26-HON-2802","prod":"인터넷+B tv","amt":202800,"lead":34,"appl":9,"canc":0,"done":7},{"region":"호남","date":"2026-08-28","act":"기존고객안내","id":"SB26-HON-2803","prod":"인터넷","amt":38700,"lead":42,"appl":13,"canc":1,"done":10},{"region":"호남","date":"2026-08-29","act":"온라인안내","id":"SB26-HON-2901","prod":"인터넷+B tv","amt":95300,"lead":51,"appl":12,"canc":1,"done":10},{"region":"호남","date":"2026-08-29","act":"현장상담","id":"SB26-HON-2902","prod":"인터넷","amt":137700,"lead":33,"appl":9,"canc":0,"done":7},{"region":"호남","date":"2026-08-29","act":"기존고객안내","id":"SB26-HON-2903","prod":"인터넷+B tv","amt":68800,"lead":51,"appl":15,"canc":2,"done":10},{"region":"호남","date":"2026-08-30","act":"온라인안내","id":"SB26-HON-3001","prod":"인터넷","amt":76700,"lead":56,"appl":13,"canc":0,"done":11},{"region":"호남","date":"2026-08-30","act":"현장상담","id":"SB26-HON-3002","prod":"인터넷+B tv","amt":97000,"lead":27,"appl":8,"canc":0,"done":7},{"region":"호남","date":"2026-08-30","act":"기존고객안내","id":"SB26-HON-3003","prod":"인터넷","amt":78500,"lead":82,"appl":22,"canc":0,"done":18},{"region":"호남","date":"2026-08-31","act":"온라인안내","id":"SB26-HON-3101","prod":"인터넷+B tv","amt":94000,"lead":61,"appl":16,"canc":3,"done":10},{"region":"호남","date":"2026-08-31","act":"현장상담","id":"SB26-HON-3102","prod":"인터넷","amt":137700,"lead":29,"appl":9,"canc":1,"done":6},{"region":"강원제주","date":"2026-08-01","act":"온라인안내","id":"SB26-GWJ-0101","prod":"인터넷+B tv","amt":116100,"lead":47,"appl":10,"canc":0,"done":8},{"region":"강원제주","date":"2026-08-01","act":"현장상담","id":"SB26-GWJ-0102","prod":"인터넷","amt":158200,"lead":51,"appl":13,"canc":2,"done":9},{"region":"강원제주","date":"2026-08-01","act":"기존고객안내","id":"SB26-GWJ-0103","prod":"인터넷+B tv","amt":59100,"lead":34,"appl":10,"canc":0,"done":8},{"region":"강원제주","date":"2026-08-02","act":"온라인안내","id":"SB26-GWJ-0201","prod":"인터넷","amt":95000,"lead":43,"appl":14,"canc":1,"done":9},{"region":"강원제주","date":"2026-08-02","act":"현장상담","id":"SB26-GWJ-0202","prod":"인터넷+B tv","amt":79000,"lead":35,"appl":9,"canc":0,"done":8},{"region":"강원제주","date":"2026-08-02","act":"기존고객안내","id":"SB26-GWJ-0203","prod":"인터넷","amt":71700,"lead":46,"appl":14,"canc":0,"done":13},{"region":"강원제주","date":"2026-08-03","act":"온라인안내","id":"SB26-GWJ-0301","prod":"인터넷+B tv","amt":49800,"lead":92,"appl":21,"canc":0,"done":20},{"region":"강원제주","date":"2026-08-03","act":"현장상담","id":"SB26-GWJ-0302","prod":"인터넷","amt":137600,"lead":41,"appl":11,"canc":1,"done":9},{"region":"강원제주","date":"2026-08-03","act":"기존고객안내","id":"SB26-GWJ-0303","prod":"인터넷+B tv","amt":87500,"lead":34,"appl":9,"canc":0,"done":7},{"region":"강원제주","date":"2026-08-04","act":"온라인안내","id":"SB26-GWJ-0401","prod":"인터넷","amt":48000,"lead":46,"appl":11,"canc":1,"done":8},{"region":"강원제주","date":"2026-08-04","act":"현장상담","id":"SB26-GWJ-0402","prod":"인터넷+B tv","amt":131100,"lead":28,"appl":8,"canc":0,"done":7},{"region":"강원제주","date":"2026-08-04","act":"기존고객안내","id":"SB26-GWJ-0403","prod":"인터넷","amt":47600,"lead":49,"appl":15,"canc":2,"done":11},{"region":"강원제주","date":"2026-08-05","act":"온라인안내","id":"SB26-GWJ-0501","prod":"인터넷+B tv","amt":111200,"lead":56,"appl":12,"canc":1,"done":9},{"region":"강원제주","date":"2026-08-05","act":"현장상담","id":"SB26-GWJ-0502","prod":"인터넷","amt":88500,"lead":37,"appl":10,"canc":1,"done":7},{"region":"강원제주","date":"2026-08-05","act":"기존고객안내","id":"SB26-GWJ-0503","prod":"인터넷+B tv","amt":67800,"lead":40,"appl":12,"canc":0,"done":9},{"region":"강원제주","date":"2026-08-06","act":"온라인안내","id":"SB26-GWJ-0601","prod":"인터넷","amt":115100,"lead":37,"appl":9,"canc":0,"done":9},{"region":"강원제주","date":"2026-08-06","act":"현장상담","id":"SB26-GWJ-0602","prod":"인터넷+B tv","amt":117200,"lead":20,"appl":6,"canc":1,"done":5},{"region":"강원제주","date":"2026-08-06","act":"기존고객안내","id":"SB26-GWJ-0603","prod":"인터넷","amt":20000,"lead":65,"appl":23,"canc":3,"done":16},{"region":"강원제주","date":"2026-08-07","act":"온라인안내","id":"SB26-GWJ-0701","prod":"인터넷+B tv","amt":63400,"lead":51,"appl":11,"canc":1,"done":9},{"region":"강원제주","date":"2026-08-07","act":"현장상담","id":"SB26-GWJ-0702","prod":"인터넷","amt":83800,"lead":47,"appl":13,"canc":2,"done":9},{"region":"강원제주","date":"2026-08-07","act":"기존고객안내","id":"SB26-GWJ-0703","prod":"인터넷+B tv","amt":52600,"lead":59,"appl":16,"canc":3,"done":11},{"region":"강원제주","date":"2026-08-08","act":"온라인안내","id":"SB26-GWJ-0801","prod":"인터넷","amt":82400,"lead":32,"appl":8,"canc":0,"done":7},{"region":"강원제주","date":"2026-08-08","act":"현장상담","id":"SB26-GWJ-0802","prod":"인터넷+B tv","amt":90200,"lead":46,"appl":12,"canc":1,"done":10},{"region":"강원제주","date":"2026-08-08","act":"기존고객안내","id":"SB26-GWJ-0803","prod":"인터넷","amt":84100,"lead":33,"appl":9,"canc":0,"done":7},{"region":"강원제주","date":"2026-08-09","act":"온라인안내","id":"SB26-GWJ-0901","prod":"인터넷+B tv","amt":82100,"lead":66,"appl":14,"canc":1,"done":10},{"region":"강원제주","date":"2026-08-09","act":"현장상담","id":"SB26-GWJ-0902","prod":"인터넷","amt":168200,"lead":41,"appl":12,"canc":1,"done":9},{"region":"강원제주","date":"2026-08-09","act":"기존고객안내","id":"SB26-GWJ-0903","prod":"인터넷+B tv","amt":86100,"lead":68,"appl":19,"canc":1,"done":15},{"region":"강원제주","date":"2026-08-10","act":"온라인안내","id":"SB26-GWJ-1001","prod":"인터넷","amt":88300,"lead":81,"appl":19,"canc":2,"done":16},{"region":"강원제주","date":"2026-08-10","act":"현장상담","id":"SB26-GWJ-1002","prod":"인터넷+B tv","amt":171700,"lead":25,"appl":6,"canc":0,"done":5},{"region":"강원제주","date":"2026-08-10","act":"기존고객안내","id":"SB26-GWJ-1003","prod":"인터넷","amt":48600,"lead":28,"appl":8,"canc":0,"done":7},{"region":"강원제주","date":"2026-08-11","act":"온라인안내","id":"SB26-GWJ-1101","prod":"인터넷+B tv","amt":57000,"lead":92,"appl":21,"canc":3,"done":14},{"region":"강원제주","date":"2026-08-11","act":"현장상담","id":"SB26-GWJ-1102","prod":"인터넷","amt":77900,"lead":34,"appl":9,"canc":0,"done":7},{"region":"강원제주","date":"2026-08-11","act":"기존고객안내","id":"SB26-GWJ-1103","prod":"인터넷+B tv","amt":38600,"lead":34,"appl":9,"canc":1,"done":7},{"region":"강원제주","date":"2026-08-12","act":"온라인안내","id":"SB26-GWJ-1201","prod":"인터넷","amt":54100,"lead":35,"appl":8,"canc":0,"done":7},{"region":"강원제주","date":"2026-08-12","act":"현장상담","id":"SB26-GWJ-1202","prod":"인터넷+B tv","amt":175400,"lead":31,"appl":8,"canc":1,"done":6},{"region":"강원제주","date":"2026-08-12","act":"기존고객안내","id":"SB26-GWJ-1203","prod":"인터넷","amt":56200,"lead":23,"appl":7,"canc":1,"done":5},{"region":"강원제주","date":"2026-08-13","act":"온라인안내","id":"SB26-GWJ-1301","prod":"인터넷+B tv","amt":112400,"lead":37,"appl":9,"canc":1,"done":6},{"region":"강원제주","date":"2026-08-13","act":"현장상담","id":"SB26-GWJ-1302","prod":"인터넷","amt":169800,"lead":37,"appl":9,"canc":1,"done":7},{"region":"강원제주","date":"2026-08-13","act":"기존고객안내","id":"SB26-GWJ-1303","prod":"인터넷+B tv","amt":81800,"lead":67,"appl":20,"canc":1,"done":16},{"region":"강원제주","date":"2026-08-14","act":"온라인안내","id":"SB26-GWJ-1401","prod":"인터넷","amt":104300,"lead":41,"appl":10,"canc":1,"done":8},{"region":"강원제주","date":"2026-08-14","act":"현장상담","id":"SB26-GWJ-1402","prod":"인터넷+B tv","amt":116600,"lead":47,"appl":11,"canc":2,"done":7},{"region":"강원제주","date":"2026-08-14","act":"기존고객안내","id":"SB26-GWJ-1403","prod":"인터넷","amt":56200,"lead":47,"appl":13,"canc":0,"done":12},{"region":"강원제주","date":"2026-08-15","act":"온라인안내","id":"SB26-GWJ-1501","prod":"인터넷+B tv","amt":107600,"lead":95,"appl":20,"canc":1,"done":16},{"region":"강원제주","date":"2026-08-15","act":"현장상담","id":"SB26-GWJ-1502","prod":"인터넷","amt":168900,"lead":48,"appl":14,"canc":0,"done":12},{"region":"강원제주","date":"2026-08-15","act":"기존고객안내","id":"SB26-GWJ-1503","prod":"인터넷+B tv","amt":45800,"lead":49,"appl":13,"canc":1,"done":10},{"region":"강원제주","date":"2026-08-16","act":"온라인안내","id":"SB26-GWJ-1601","prod":"인터넷","amt":78100,"lead":74,"appl":16,"canc":3,"done":11},{"region":"강원제주","date":"2026-08-16","act":"현장상담","id":"SB26-GWJ-1602","prod":"인터넷+B tv","amt":127700,"lead":29,"appl":7,"canc":1,"done":5},{"region":"강원제주","date":"2026-08-16","act":"기존고객안내","id":"SB26-GWJ-1603","prod":"인터넷","amt":74100,"lead":43,"appl":11,"canc":0,"done":9},{"region":"강원제주","date":"2026-08-17","act":"온라인안내","id":"SB26-GWJ-1701","prod":"인터넷+B tv","amt":75100,"lead":58,"appl":12,"canc":1,"done":8},{"region":"강원제주","date":"2026-08-17","act":"현장상담","id":"SB26-GWJ-1702","prod":"인터넷","amt":155000,"lead":28,"appl":7,"canc":1,"done":5},{"region":"강원제주","date":"2026-08-17","act":"기존고객안내","id":"SB26-GWJ-1703","prod":"인터넷+B tv","amt":70400,"lead":44,"appl":13,"canc":2,"done":10},{"region":"강원제주","date":"2026-08-18","act":"온라인안내","id":"SB26-GWJ-1801","prod":"인터넷","amt":102300,"lead":52,"appl":11,"canc":2,"done":8},{"region":"강원제주","date":"2026-08-18","act":"현장상담","id":"SB26-GWJ-1802","prod":"인터넷+B tv","amt":110200,"lead":43,"appl":11,"canc":0,"done":8},{"region":"강원제주","date":"2026-08-18","act":"기존고객안내","id":"SB26-GWJ-1803","prod":"인터넷","amt":59800,"lead":49,"appl":14,"canc":1,"done":10},{"region":"강원제주","date":"2026-08-19","act":"온라인안내","id":"SB26-GWJ-1901","prod":"인터넷+B tv","amt":102900,"lead":71,"appl":18,"canc":0,"done":17},{"region":"강원제주","date":"2026-08-19","act":"현장상담","id":"SB26-GWJ-1902","prod":"인터넷","amt":136900,"lead":48,"appl":12,"canc":1,"done":8},{"region":"강원제주","date":"2026-08-19","act":"기존고객안내","id":"SB26-GWJ-1903","prod":"인터넷+B tv","amt":73500,"lead":63,"appl":18,"canc":3,"done":13},{"region":"강원제주","date":"2026-08-20","act":"온라인안내","id":"SB26-GWJ-2001","prod":"인터넷","amt":67500,"lead":61,"appl":15,"canc":1,"done":11},{"region":"강원제주","date":"2026-08-20","act":"현장상담","id":"SB26-GWJ-2002","prod":"인터넷+B tv","amt":179400,"lead":35,"appl":10,"canc":2,"done":7},{"region":"강원제주","date":"2026-08-20","act":"기존고객안내","id":"SB26-GWJ-2003","prod":"인터넷","amt":65600,"lead":47,"appl":14,"canc":0,"done":11},{"region":"강원제주","date":"2026-08-21","act":"온라인안내","id":"SB26-GWJ-2101","prod":"인터넷+B tv","amt":115900,"lead":58,"appl":12,"canc":1,"done":8},{"region":"강원제주","date":"2026-08-21","act":"현장상담","id":"SB26-GWJ-2102","prod":"인터넷","amt":109700,"lead":46,"appl":12,"canc":2,"done":10},{"region":"강원제주","date":"2026-08-21","act":"기존고객안내","id":"SB26-GWJ-2103","prod":"인터넷+B tv","amt":64500,"lead":32,"appl":10,"canc":1,"done":8},{"region":"강원제주","date":"2026-08-22","act":"온라인안내","id":"SB26-GWJ-2201","prod":"인터넷","amt":93000,"lead":47,"appl":12,"canc":2,"done":8},{"region":"강원제주","date":"2026-08-22","act":"현장상담","id":"SB26-GWJ-2202","prod":"인터넷+B tv","amt":94100,"lead":28,"appl":8,"canc":0,"done":7},{"region":"강원제주","date":"2026-08-22","act":"기존고객안내","id":"SB26-GWJ-2203","prod":"인터넷","amt":81700,"lead":44,"appl":13,"canc":2,"done":8},{"region":"강원제주","date":"2026-08-23","act":"온라인안내","id":"SB26-GWJ-2301","prod":"인터넷+B tv","amt":63800,"lead":91,"appl":21,"canc":3,"done":15},{"region":"강원제주","date":"2026-08-23","act":"현장상담","id":"SB26-GWJ-2302","prod":"인터넷","amt":187600,"lead":31,"appl":8,"canc":0,"done":6},{"region":"강원제주","date":"2026-08-23","act":"기존고객안내","id":"SB26-GWJ-2303","prod":"인터넷+B tv","amt":35500,"lead":55,"appl":16,"canc":2,"done":12},{"region":"강원제주","date":"2026-08-24","act":"온라인안내","id":"SB26-GWJ-2401","prod":"인터넷","amt":60700,"lead":67,"appl":16,"canc":3,"done":10},{"region":"강원제주","date":"2026-08-24","act":"현장상담","id":"SB26-GWJ-2402","prod":"인터넷+B tv","amt":116500,"lead":50,"appl":12,"canc":2,"done":9},{"region":"강원제주","date":"2026-08-24","act":"기존고객안내","id":"SB26-GWJ-2403","prod":"인터넷","amt":45900,"lead":42,"appl":12,"canc":2,"done":8},{"region":"강원제주","date":"2026-08-25","act":"온라인안내","id":"SB26-GWJ-2501","prod":"인터넷+B tv","amt":77500,"lead":66,"appl":15,"canc":1,"done":11},{"region":"강원제주","date":"2026-08-25","act":"현장상담","id":"SB26-GWJ-2502","prod":"인터넷","amt":185300,"lead":23,"appl":6,"canc":1,"done":4},{"region":"강원제주","date":"2026-08-25","act":"기존고객안내","id":"SB26-GWJ-2503","prod":"인터넷+B tv","amt":62700,"lead":29,"appl":8,"canc":1,"done":6},{"region":"강원제주","date":"2026-08-26","act":"온라인안내","id":"SB26-GWJ-2601","prod":"인터넷","amt":76400,"lead":56,"appl":14,"canc":0,"done":13},{"region":"강원제주","date":"2026-08-26","act":"현장상담","id":"SB26-GWJ-2602","prod":"인터넷+B tv","amt":180700,"lead":49,"appl":14,"canc":0,"done":11},{"region":"강원제주","date":"2026-08-26","act":"기존고객안내","id":"SB26-GWJ-2603","prod":"인터넷","amt":65000,"lead":36,"appl":10,"canc":1,"done":9},{"region":"강원제주","date":"2026-08-27","act":"온라인안내","id":"SB26-GWJ-2701","prod":"인터넷+B tv","amt":74500,"lead":95,"appl":22,"canc":0,"done":18},{"region":"강원제주","date":"2026-08-27","act":"현장상담","id":"SB26-GWJ-2702","prod":"인터넷","amt":139800,"lead":47,"appl":12,"canc":2,"done":8},{"region":"강원제주","date":"2026-08-27","act":"기존고객안내","id":"SB26-GWJ-2703","prod":"인터넷+B tv","amt":72100,"lead":57,"appl":16,"canc":1,"done":14},{"region":"강원제주","date":"2026-08-28","act":"온라인안내","id":"SB26-GWJ-2801","prod":"인터넷","amt":64700,"lead":33,"appl":8,"canc":0,"done":6},{"region":"강원제주","date":"2026-08-28","act":"현장상담","id":"SB26-GWJ-2802","prod":"인터넷+B tv","amt":169000,"lead":43,"appl":12,"canc":2,"done":9},{"region":"강원제주","date":"2026-08-28","act":"기존고객안내","id":"SB26-GWJ-2803","prod":"인터넷","amt":67500,"lead":57,"appl":16,"canc":3,"done":12},{"region":"강원제주","date":"2026-08-29","act":"온라인안내","id":"SB26-GWJ-2901","prod":"인터넷+B tv","amt":104300,"lead":69,"appl":14,"canc":0,"done":13},{"region":"강원제주","date":"2026-08-29","act":"현장상담","id":"SB26-GWJ-2902","prod":"인터넷","amt":135300,"lead":39,"appl":10,"canc":0,"done":9},{"region":"강원제주","date":"2026-08-29","act":"기존고객안내","id":"SB26-GWJ-2903","prod":"인터넷+B tv","amt":55800,"lead":31,"appl":9,"canc":0,"done":7},{"region":"강원제주","date":"2026-08-30","act":"온라인안내","id":"SB26-GWJ-3001","prod":"인터넷","amt":54600,"lead":93,"appl":20,"canc":0,"done":16},{"region":"강원제주","date":"2026-08-30","act":"현장상담","id":"SB26-GWJ-3002","prod":"인터넷+B tv","amt":131900,"lead":27,"appl":8,"canc":1,"done":7},{"region":"강원제주","date":"2026-08-30","act":"기존고객안내","id":"SB26-GWJ-3003","prod":"인터넷","amt":87400,"lead":48,"appl":13,"canc":1,"done":10},{"region":"강원제주","date":"2026-08-31","act":"온라인안내","id":"SB26-GWJ-3101","prod":"인터넷+B tv","amt":55300,"lead":35,"appl":8,"canc":1,"done":5},{"region":"강원제주","date":"2026-08-31","act":"현장상담","id":"SB26-GWJ-3102","prod":"인터넷","amt":154800,"lead":28,"appl":7,"canc":0,"done":6}],"pending":[{"region":"영남","date":"2026-08-31","act":"기존고객안내","id":"SB26-YNG-3103","amt":140200,"done":7},{"region":"충청","date":"2026-08-31","act":"기존고객안내","id":"SB26-CHC-3103","amt":86600,"done":20},{"region":"호남","date":"2026-08-31","act":"기존고객안내","id":"SB26-HON-3103","amt":58600,"done":16},{"region":"강원제주","date":"2026-08-31","act":"기존고객안내","id":"SB26-GWJ-3103","amt":82700,"done":12}]};
+const REG = ['영남', '충청', '호남', '강원제주'];
+const ACT = ['온라인안내', '현장상담', '기존고객안내'];
+const PROD = ['인터넷', '인터넷+B tv'];
+const ACT_COLOR = { '온라인안내': 'var(--a-on)', '현장상담': 'var(--a-fd)', '기존고객안내': 'var(--a-ex)' };
+const ACT_INK = { '온라인안내': '#fff', '현장상담': '#202124', '기존고객안내': '#fff' }; // 황토 위에는 어두운 글자
+const REG_COLOR = { '영남': 'var(--r-yn)', '충청': 'var(--r-cc)', '호남': 'var(--r-hn)', '강원제주': 'var(--r-gj)' };
+const COLOR = { ...REG_COLOR, ...ACT_COLOR };
+const dotOf = v => COLOR[v] ? `<span class="dot" style="background:${COLOR[v]}"></span>` : '';
+const WD = ['월', '화', '수', '목', '금', '토', '일'];
+const state = { region: 'all', act: 'all', prod: 'all' };
+const wdOf = d => (new Date(d + 'T00:00:00').getDay() + 6) % 7; // 0=월
+
+const nf = new Intl.NumberFormat('ko-KR');
+const won = v => nf.format(Math.round(v));
+const pct = (v, d = 1) => (v * 100).toFixed(d) + '%';
+const man = v => v >= 1e8 ? (v / 1e8).toFixed(2) + '억' : v >= 1e4 ? nf.format(Math.round(v / 1e4)) + '만' : nf.format(v);
+
+function agg(R) {
+  const a = { n: R.length, amt: 0, lead: 0, appl: 0, canc: 0, done: 0 };
+  for (const x of R) { a.amt += x.amt; a.lead += x.lead; a.appl += x.appl; a.canc += x.canc; a.done += x.done; }
+  a.applRate = a.lead ? a.appl / a.lead : 0;
+  a.doneRate = a.appl ? a.done / a.appl : 0;
+  a.cancRate = a.appl ? a.canc / a.appl : 0;
+  a.l2d = a.lead ? a.done / a.lead : 0;
+  a.cpa = a.done ? a.amt / a.done : 0;
+  return a;
+}
+const by = (R, k, keys) => keys.map(v => [v, agg(R.filter(x => x[k] === v))]);
+const filtered = () => DATA.rows.filter(x =>
+  (state.region === 'all' || x.region === state.region) &&
+  (state.act === 'all' || x.act === state.act) &&
+  (state.prod === 'all' || x.prod === state.prod));
+
+/* ---------- 툴팁 ---------- */
+const tip = document.getElementById('tip');
+function showTip(html, ev, el) {
+  tip.innerHTML = html; tip.style.opacity = 1;
+  let x, y;
+  if (ev && ev.clientX !== undefined && ev.type !== 'focus') { x = ev.clientX; y = ev.clientY; }
+  else { const r = el.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top; }
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let left = x + 14, top = y - h - 10;
+  if (left + w > window.innerWidth - 8) left = x - w - 14;
+  if (left < 8) left = 8;
+  if (top < 8) top = y + 16;
+  tip.style.left = left + 'px'; tip.style.top = top + 'px';
+}
+const hideTip = () => { tip.style.opacity = 0; };
+function bindTip(el, html) {
+  el.setAttribute('tabindex', '0');
+  el.addEventListener('mousemove', e => showTip(html, e, el));
+  el.addEventListener('mouseleave', hideTip);
+  el.addEventListener('focus', e => showTip(html, e, el));
+  el.addEventListener('blur', hideTip);
+}
+const SVGNS = 'http://www.w3.org/2000/svg';
+function s(tag, attrs = {}, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+/* ---------- 가로 막대 ---------- */
+function hbar(el, items, opt = {}) {
+  el.innerHTML = '';
+  const W = Math.max(280, el.clientWidth), labelW = 70, valW = opt.valW || 120, rowH = 34, barH = 18, top = 6;
+  const H = top + items.length * rowH + (opt.avg !== undefined ? 18 : 4);
+  const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': opt.aria || '' }, el);
+  const plotW = W - labelW - valW;
+  const max = opt.max || Math.max(...items.map(d => d.value), opt.avg || 0) || 1;
+  const x = v => labelW + (v / max) * plotW;
+  s('line', { x1: labelW, x2: labelW, y1: top - 2, y2: top + items.length * rowH, stroke: 'var(--axis)', 'stroke-width': 1 }, svg);
+  if (opt.avg !== undefined) { // 평균선은 막대·숫자 아래에 먼저 그림
+    const ax = x(opt.avg);
+    s('line', { x1: ax, x2: ax, y1: top - 2, y2: top + items.length * rowH, stroke: 'var(--text-muted)', 'stroke-width': 1.5 }, svg);
+    s('text', { x: ax, y: H - 2, 'text-anchor': 'middle', 'font-size': 11.5, fill: 'var(--text-secondary)' }, svg).textContent = opt.avgLabel;
+  }
+  items.forEach((d, i) => {
+    const y = top + i * rowH + (rowH - barH) / 2;
+    const g = s('g', { class: 'mark' }, svg);
+    s('text', { x: labelW - 10, y: y + barH / 2 + 4, 'text-anchor': 'end', 'font-size': 12.5, fill: 'var(--text-primary)', 'font-weight': d.hl ? 700 : 400 }, g).textContent = d.label;
+    const w = Math.max(0, x(d.value) - labelW);
+    // 4px 둥근 끝, 기준선에 붙은 쪽은 각지게
+    const r = Math.min(4, w / 2);
+    s('path', { d: `M${labelW},${y} H${labelW + w - r} Q${labelW + w},${y} ${labelW + w},${y + r} V${y + barH - r} Q${labelW + w},${y + barH} ${labelW + w - r},${y + barH} H${labelW} Z`,
+      fill: d.dim ? 'var(--bar-muted)' : (d.color || 'var(--bar)') }, g);
+    const t = s('text', { x: labelW + w + 8, y: y + barH / 2 + 4, 'font-size': 12.5, fill: 'var(--text-primary)', 'font-weight': 600,
+      stroke: 'var(--bg-card)', 'stroke-width': 4, 'paint-order': 'stroke', 'stroke-linejoin': 'round' }, g);
+    s('tspan', {}, t).textContent = d.text;
+    if (d.sub) s('tspan', { dx: 6, 'font-size': 11.5, 'font-weight': 400, fill: 'var(--text-secondary)' }, t).textContent = d.sub;
+    s('rect', { x: 0, y: top + i * rowH, width: W, height: rowH, fill: 'transparent' }, g);
+    if (d.tip) bindTip(g, d.tip);
+  });
+}
+
+/* ---------- 선 차트 (1개 또는 여러 계열, 십자선 툴팁) ---------- */
+function line(el, series, opt) {
+  el.innerHTML = '';
+  const multi = series.length > 1;
+  if (multi) {
+    const lg = document.createElement('div'); lg.className = 'legend';
+    lg.innerHTML = series.map(sr => `<span><i style="background:${sr.color}"></i>${sr.name}</span>`).join('');
+    el.appendChild(lg);
+  }
+  const pts = series[0].pts;
+  const W = Math.max(280, el.clientWidth), H = 220, m = { l: 52, r: multi ? 64 : 16, t: 14, b: 28 };
+  const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': opt.aria }, el);
+  if (!pts.length) return;
+  const pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const maxV = Math.max(...series.flatMap(sr => sr.pts.map(p => p.v))) * 1.1 || 1;
+  const step = niceStep(maxV / 4);
+  const top = Math.ceil(maxV / step) * step;
+  const xs = i => m.l + (pts.length === 1 ? pw / 2 : i * pw / (pts.length - 1));
+  const ys = v => m.t + ph - (v / top) * ph;
+  for (let v = 0; v <= top + 1e-9; v += step) {
+    s('line', { x1: m.l, x2: W - m.r, y1: ys(v), y2: ys(v), stroke: v === 0 ? 'var(--axis)' : 'var(--grid)', 'stroke-width': 1 }, svg);
+    s('text', { x: m.l - 8, y: ys(v) + 4, 'text-anchor': 'end', 'font-size': 11, fill: 'var(--text-muted)', style: 'font-variant-numeric:tabular-nums' }, svg).textContent = opt.tick(v);
+  }
+  pts.forEach((p, i) => {
+    if (p.day === 1 || p.day % 5 === 0) s('text', { x: xs(i), y: H - 8, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--text-muted)' }, svg).textContent = '8/' + p.day;
+  });
+  for (const sr of series)
+    s('path', { d: sr.pts.map((p, i) => (i ? 'L' : 'M') + xs(i) + ',' + ys(p.v)).join(''), fill: 'none', stroke: sr.color, 'stroke-width': 2, 'stroke-linejoin': 'round' }, svg);
+  if (!multi) {
+    // 선택적 직접 라벨: 최대·최소
+    const c0 = series[0].color;
+    const avg = pts.reduce((a, p) => a + p.v, 0) / pts.length;
+    const iMax = pts.reduce((b, p, i) => p.v > pts[b].v ? i : b, 0), iMin = pts.reduce((b, p, i) => p.v < pts[b].v ? i : b, 0);
+    for (const [i, lab] of [[iMax, '최고'], [iMin, '최저']]) {
+      s('circle', { cx: xs(i), cy: ys(pts[i].v), r: 4, fill: c0, stroke: 'var(--bg-card)', 'stroke-width': 2 }, svg);
+      const tx = Math.min(Math.max(xs(i), m.l + 40), W - m.r - 40);
+      s('text', { x: tx, y: ys(pts[i].v) + (lab === '최고' ? -9 : 16), 'text-anchor': 'middle', 'font-size': 11.5, fill: 'var(--text-primary)', 'font-weight': 600 }, svg).textContent = `${lab} 8/${pts[i].day} ${opt.fmt(pts[i].v)}`;
+    }
+    s('text', { x: W - m.r, y: m.t - 2, 'text-anchor': 'end', 'font-size': 11.5, fill: 'var(--text-secondary)' }, svg).textContent = `하루 평균 ${opt.fmt(avg)}`;
+  } else {
+    // 끝점 직접 라벨 (겹치지 않게 14px 간격)
+    const ends = series.map(sr => ({ sr, y: ys(sr.pts[sr.pts.length - 1].v) })).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
+    const over = ends[ends.length - 1].y - (m.t + ph - 4); // 축 아래로 밀리면 전체를 위로
+    if (over > 0) ends.forEach(e => { e.y -= over; });
+    const last = pts.length - 1;
+    for (const e of ends) {
+      s('circle', { cx: xs(last), cy: ys(e.sr.pts[last].v), r: 3.5, fill: e.sr.color, stroke: 'var(--bg-card)', 'stroke-width': 2 }, svg);
+      s('text', { x: xs(last) + 8, y: e.y + 4, 'font-size': 11.5, fill: 'var(--text-primary)', 'font-weight': 600 }, svg).textContent = e.sr.name;
+    }
+  }
+  const cross = s('line', { y1: m.t, y2: m.t + ph, stroke: 'var(--text-muted)', 'stroke-width': 1, opacity: 0 }, svg);
+  const dots = series.map(sr => s('circle', { r: 4.5, fill: sr.color, stroke: 'var(--bg-card)', 'stroke-width': 2, opacity: 0 }, svg));
+  const dot = dots[0];
+  const hit = s('rect', { x: m.l, y: m.t, width: pw, height: ph, fill: 'transparent', tabindex: 0, 'aria-label': opt.aria + ' 상세값 (좌우 화살표로 이동)' }, svg);
+  let cur = pts.length - 1;
+  const show = (i, ev) => {
+    cur = i;
+    cross.setAttribute('x1', xs(i)); cross.setAttribute('x2', xs(i)); cross.setAttribute('opacity', 1);
+    series.forEach((sr, k) => { dots[k].setAttribute('cx', xs(i)); dots[k].setAttribute('cy', ys(sr.pts[i].v)); dots[k].setAttribute('opacity', 1); });
+    showTip(opt.tip(i), ev && ev.type === 'mousemove' ? ev : null, dot);
+  };
+  hit.addEventListener('mousemove', ev => {
+    const r = svg.getBoundingClientRect(); const sx = (ev.clientX - r.left) * W / r.width;
+    show(Math.max(0, Math.min(pts.length - 1, Math.round((sx - m.l) / pw * (pts.length - 1)))), ev);
+  });
+  hit.addEventListener('focus', () => show(cur));
+  hit.addEventListener('keydown', ev => {
+    if (ev.key === 'ArrowRight') { show(Math.min(pts.length - 1, cur + 1)); ev.preventDefault(); }
+    if (ev.key === 'ArrowLeft') { show(Math.max(0, cur - 1)); ev.preventDefault(); }
+  });
+  const off = () => { cross.setAttribute('opacity', 0); dots.forEach(d => d.setAttribute('opacity', 0)); hideTip(); };
+  hit.addEventListener('mouseleave', off); hit.addEventListener('blur', off);
+}
+function niceStep(raw) {
+  const p = Math.pow(10, Math.floor(Math.log10(raw))); const f = raw / p;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+}
+
+/* ---------- 표 ---------- */
+function table(el, head, rows) {
+  el.innerHTML = '<table><thead><tr>' + head.map((h, i) => `<th${i === 0 ? ' class="l"' : ''}>${h}</th>`).join('') + '</tr></thead><tbody>' +
+    rows.map(r => '<tr>' + r.map((c, i) => `<td${i === 0 ? ' class="l"' : ''}>${c}</td>`).join('') + '</tr>').join('') + '</tbody></table>';
+}
+
+/* ---------- 필터 ---------- */
+function buildFilters() {
+  const opts = { region: REG, act: ACT, prod: PROD };
+  document.querySelectorAll('.fgroup').forEach(g => {
+    const key = g.dataset.key;
+    ['all', ...opts[key]].forEach(v => {
+      const b = document.createElement('button');
+      b.className = 'chip'; b.type = 'button'; b.id = `f-${key}-${v === 'all' ? 'all' : opts[key].indexOf(v)}`;
+      b.innerHTML = v === 'all' ? '전체' : dotOf(v) + v;
+      b.setAttribute('aria-pressed', state[key] === v);
+      b.addEventListener('click', () => { state[key] = v; g.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === b)); render(); });
+      g.appendChild(b);
+    });
+  });
+}
+
+/* ---------- 렌더 ---------- */
+function render() {
+  const R = filtered(); const T = agg(R);
+  const desc = [state.region, state.act, state.prod].filter(v => v !== 'all');
+  document.getElementById('fstate').textContent = (desc.length ? desc.join(' · ') : '전체') + ` · 확정 ${nf.format(T.n)}건`;
+
+  // KPI
+  const kp = [
+    ['확정 집행비', man(T.amt), '원', `${won(T.amt)}원`],
+    ['상담 건수', nf.format(T.lead), '건', `접수 ${nf.format(T.appl)}건 · 취소 ${nf.format(T.canc)}건`],
+    ['처리완료', nf.format(T.done), '건', `상담 대비 ${pct(T.l2d)}`],
+    ['완료 1건당 비용', T.done ? won(T.cpa) : '-', '원', '집행비 ÷ 처리완료'],
+    ['상담 → 접수', pct(T.applRate), '', `접수 → 완료 ${pct(T.doneRate)}`],
+    ['취소율', pct(T.cancRate), '', '취소 ÷ 접수'],
+  ];
+  document.getElementById('kpis').innerHTML = kp.map(k => `<div class="kpi"><div class="k">${k[0]}</div><div class="v">${k[1]}<small>${k[2]}</small></div><div class="d">${k[3]}</div></div>`).join('');
+
+  // 지역 (지역 필터는 해당 지역 강조, 나머지는 같은 활동·상품 조건으로 비교)
+  const Rr = DATA.rows.filter(x => (state.act === 'all' || x.act === state.act) && (state.prod === 'all' || x.prod === state.prod));
+  const reg = by(Rr, 'region', REG); const RT = agg(Rr);
+  const dim = r => state.region !== 'all' && state.region !== r;
+  const ttR = (r, a) => `<b>${r}</b><br>집행비 ${won(a.amt)}원<br>상담 ${nf.format(a.lead)} · 접수 ${nf.format(a.appl)} · 완료 ${nf.format(a.done)}<br>완료 1건당 ${won(a.cpa)}원<br>상담→접수 ${pct(a.applRate)} · 접수→완료 ${pct(a.doneRate)}`;
+  hbar(document.getElementById('c-region-amt'), reg.map(([r, a]) => ({ label: r, value: a.amt, text: man(a.amt) + '원', sub: pct(a.amt / RT.amt, 0), dim: dim(r), color: REG_COLOR[r], hl: !dim(r) && state.region !== 'all', tip: ttR(r, a) })), { aria: '지역별 확정 집행비 막대 차트', valW: 130 });
+  hbar(document.getElementById('c-region-cpa'), reg.map(([r, a]) => ({ label: r, value: a.cpa, text: won(a.cpa) + '원', dim: dim(r), color: REG_COLOR[r], tip: ttR(r, a) })), { avg: RT.cpa, avgLabel: `평균 ${won(RT.cpa)}원`, aria: '지역별 완료 1건당 비용 막대 차트', valW: 90 });
+  hbar(document.getElementById('c-region-appl'), reg.map(([r, a]) => ({ label: r, value: a.applRate, text: pct(a.applRate), dim: dim(r), color: REG_COLOR[r], tip: ttR(r, a) })), { max: 1, avg: RT.applRate, avgLabel: `평균 ${pct(RT.applRate)}`, aria: '지역별 상담 대비 접수 전환율', valW: 60 });
+  hbar(document.getElementById('c-region-done'), reg.map(([r, a]) => ({ label: r, value: a.doneRate, text: pct(a.doneRate), dim: dim(r), color: REG_COLOR[r], tip: ttR(r, a) })), { max: 1, avg: RT.doneRate, avgLabel: `평균 ${pct(RT.doneRate)}`, aria: '지역별 접수 대비 완료 전환율', valW: 60 });
+  table(document.getElementById('t-region'), ['지역', '건수', '집행비(원)', '상담', '접수', '취소', '완료', '상담→접수', '접수→완료', '완료 1건당(원)'],
+    [...reg, ['합계', RT]].map(([r, a]) => [dotOf(r) + r, a.n, won(a.amt), nf.format(a.lead), nf.format(a.appl), nf.format(a.canc), nf.format(a.done), pct(a.applRate), pct(a.doneRate), won(a.cpa)]));
+
+  // 활동구분 구성 막대
+  const Ra = DATA.rows.filter(x => (state.region === 'all' || x.region === state.region) && (state.prod === 'all' || x.prod === state.prod));
+  const act = by(Ra, 'act', ACT); const AT = agg(Ra);
+  document.getElementById('lg-act').innerHTML = ACT.map(a => `<span><i style="background:${ACT_COLOR[a]}"></i>${a}</span>`).join('');
+  const seg = document.getElementById('c-act-seg'); seg.innerHTML = '';
+  for (const [key, lab, unit] of [['amt', '집행비', '원'], ['done', '처리완료', '건']]) {
+    const row = document.createElement('div'); row.className = 'seg-row';
+    row.innerHTML = `<div class="lbl"><span>${lab}</span><span>합계 ${key === 'amt' ? man(AT.amt) + '원' : nf.format(AT.done) + '건'}</span></div>`;
+    const bar = document.createElement('div'); bar.className = 'seg';
+    act.forEach(([a, v]) => {
+      const share = AT[key] ? v[key] / AT[key] : 0;
+      if (share <= 0) return;
+      const d = document.createElement('div');
+      d.style.flex = share; d.style.background = ACT_COLOR[a]; d.style.color = ACT_INK[a];
+      d.textContent = share >= 0.12 ? pct(share, 0) : '';
+      d.setAttribute('aria-label', `${a} ${lab} ${pct(share)}`);
+      bindTip(d, `<b>${a}</b> · ${lab}<br>${key === 'amt' ? won(v.amt) + '원' : nf.format(v.done) + '건'} (${pct(share)})<br>완료 1건당 ${won(v.cpa)}원`);
+      bar.appendChild(d);
+    });
+    row.appendChild(bar); seg.appendChild(row);
+  }
+  table(document.getElementById('t-act'), ['활동구분', '집행비(원)', '집행비 비중', '완료', '완료 비중', '상담→접수', '완료 1건당(원)'],
+    act.map(([a, v]) => [dotOf(a) + a, won(v.amt), pct(AT.amt ? v.amt / AT.amt : 0), nf.format(v.done), pct(AT.done ? v.done / AT.done : 0), pct(v.applRate), won(v.cpa)]));
+
+  // 히트맵 (상품 필터만 적용, 선택 지역·활동은 테두리로 강조)
+  const Rh = DATA.rows.filter(x => state.prod === 'all' || x.prod === state.prod);
+  const cells = []; for (const r of REG) for (const a of ACT) cells.push([r, a, agg(Rh.filter(x => x.region === r && x.act === a))]);
+  const vals = cells.map(c => c[2].cpa); const lo = Math.min(...vals), hi = Math.max(...vals);
+  const ramp = ['#FDE8EC', '#F9C2CC', '#F59AAA', '#EF5C76', '#EA002C', '#B8001F', '#8F001B'];
+  const heat = document.getElementById('c-heat');
+  heat.className = 'heat'; heat.style.gridTemplateColumns = `56px repeat(${ACT.length}, minmax(0,1fr))`;
+  heat.innerHTML = '<div></div>' + ACT.map(a => `<div class="h">${a}</div>`).join('');
+  for (const r of REG) {
+    const rh = document.createElement('div'); rh.className = 'rh'; rh.innerHTML = dotOf(r) + r; heat.appendChild(rh);
+    for (const a of ACT) {
+      const v = cells.find(c => c[0] === r && c[1] === a)[2];
+      const t = hi > lo ? (v.cpa - lo) / (hi - lo) : 0; const idx = Math.round(t * (ramp.length - 1));
+      const c = document.createElement('div'); c.className = 'c';
+      c.style.background = ramp[idx]; c.style.color = idx >= 3 ? '#fff' : 'var(--text-primary)';
+      const sel = (state.region === r || state.region === 'all') && (state.act === a || state.act === 'all');
+      if (!sel) c.style.opacity = .35;
+      c.innerHTML = `${won(v.cpa)}<small>완료 ${nf.format(v.done)}건</small>`;
+      bindTip(c, `<b>${r} · ${a}</b><br>집행비 ${won(v.amt)}원<br>완료 ${nf.format(v.done)}건 · 1건당 ${won(v.cpa)}원<br>상담→접수 ${pct(v.applRate)}`);
+      heat.appendChild(c);
+    }
+  }
+
+  // 일별
+  const days = [...new Set(R.map(x => x.date))].sort();
+  const daily = days.map(d => { const a = agg(R.filter(x => x.date === d)); return { day: +d.slice(8), date: d, a }; });
+  const tipD = p => `<b>8월 ${p.day}일 (${WD[wdOf(p.date)]})</b><br>집행비 ${won(p.a.amt)}원<br>상담 ${nf.format(p.a.lead)} · 완료 ${nf.format(p.a.done)}<br>완료 1건당 ${won(p.a.cpa)}원`;
+  const oneColor = state.region === 'all' ? 'var(--total)' : REG_COLOR[state.region];
+  line(document.getElementById('c-daily-amt'), [{ name: '합계', color: oneColor, pts: daily.map(p => ({ ...p, v: p.a.amt })) }],
+    { aria: '일별 확정 집행비 선 차트', tick: v => man(v), fmt: v => man(v) + '원', tip: i => tipD(daily[i]) });
+  // 지역별 처리완료: 지역 필터가 전체면 지역마다 다른 색 선
+  const regs = state.region === 'all' ? REG : [state.region];
+  const regDaily = regs.map(r => ({ name: r, color: REG_COLOR[r], pts: days.map(d => { const a = agg(R.filter(x => x.region === r && x.date === d)); return { day: +d.slice(8), date: d, v: a.done, a }; }) }));
+  line(document.getElementById('c-daily-done'), regDaily, {
+    aria: '지역별 일별 처리완료 건수 선 차트', tick: v => nf.format(v), fmt: v => nf.format(Math.round(v)) + '건',
+    tip: i => `<b>8월 ${regDaily[0].pts[i].day}일 (${WD[wdOf(regDaily[0].pts[i].date)]})</b><br>` + regDaily.map(sr => `${dotOf(sr.name)}${sr.name} 완료 ${nf.format(sr.pts[i].v)}건`).join('<br>') });
+
+  // 요일
+  const wdRows = [];
+  for (let w = 0; w < 7; w++) {
+    const Rw = R.filter(x => wdOf(x.date) === w);
+    const nd = new Set(Rw.map(x => x.date)).size; if (!nd) continue;
+    const a = agg(Rw); wdRows.push([WD[w], nd + '일', won(a.amt / nd), nf.format(Math.round(a.lead / nd)), (a.done / nd).toFixed(1), won(a.cpa)]);
+  }
+  table(document.getElementById('t-weekday'), ['요일', '일수', '하루 집행비(원)', '하루 상담', '하루 완료', '완료 1건당(원)'], wdRows);
+
+  // 상품·기간
+  const pr = by(R, 'prod', PROD);
+  const h1 = agg(R.filter(x => +x.date.slice(8) <= 15)), h2 = agg(R.filter(x => +x.date.slice(8) > 15));
+  table(document.getElementById('t-prod'), ['구분', '집행비(원)', '완료', '상담→접수', '접수→완료', '취소율', '완료 1건당(원)'],
+    [...pr, ['1~15일', h1], ['16~31일', h2]].map(([k, a]) => [k, won(a.amt), nf.format(a.done), pct(a.applRate), pct(a.doneRate), pct(a.cancRate), a.done ? won(a.cpa) : '-']));
+
+  // 상위 CPA
+  const top = R.filter(x => x.done).map(x => ({ ...x, cpa: x.amt / x.done })).sort((a, b) => b.cpa - a.cpa).slice(0, 8);
+  table(document.getElementById('t-top'), ['기록ID', '지역', '일자', '활동', '집행비(원)', '상담', '완료', '1건당(원)'],
+    top.map(x => [x.id, dotOf(x.region) + x.region, x.date.slice(5), dotOf(x.act) + x.act, won(x.amt), x.lead, x.done, `<b>${won(x.cpa)}</b>`]));
+}
+
+/* ---------- 정적 인사이트 (전체 확정 기준, 수치는 데이터에서 계산) ---------- */
+function insights() {
+  const all = agg(DATA.rows);
+  const reg = Object.fromEntries(by(DATA.rows, 'region', REG));
+  const act = Object.fromEntries(by(DATA.rows, 'act', ACT));
+  const yf = agg(DATA.rows.filter(x => x.region === '영남' && x.act === '현장상담'));
+  const fieldOther = agg(DATA.rows.filter(x => x.region !== '영남' && x.act === '현장상담'));
+  const top8 = DATA.rows.filter(x => x.done).map(x => ({ ...x, cpa: x.amt / x.done })).sort((a, b) => b.cpa - a.cpa).slice(0, 8);
+  const top8yf = top8.filter(x => x.region === '영남' && x.act === '현장상담').length;
+  const prd = by(DATA.rows, 'prod', PROD);
+  const doneRates = REG.map(r => reg[r].doneRate);
+  const cards = [
+    { c: '', tag: ['bad', '비용 효율 낮음'], h: `영남은 집행비의 ${pct(reg['영남'].amt / all.amt, 0)}를 쓰지만 완료는 ${pct(reg['영남'].done / all.done, 0)}예요`,
+      p: `영남 완료 1건당 비용은 <b>${won(reg['영남'].cpa)}원</b>으로 충청(${won(reg['충청'].cpa)}원)의 <b>${(reg['영남'].cpa / reg['충청'].cpa).toFixed(1)}배</b>예요. 상담 → 접수 전환율이 <b>${pct(reg['영남'].applRate)}</b>로 다른 지역(${pct(reg['강원제주'].applRate)}~${pct(reg['충청'].applRate)})보다 낮은 게 주된 원인이에요.`,
+      a: '영남 상담 스크립트·응대 품질을 충청 사례와 비교 점검' },
+    { c: '', tag: ['bad', '집중 점검'], h: `영남 현장상담은 완료 1건당 ${won(yf.cpa)}원이에요`,
+      p: `다른 3개 지역 현장상담 평균(<b>${won(fieldOther.cpa)}원</b>)의 <b>${(yf.cpa / fieldOther.cpa).toFixed(1)}배</b>예요. 1건당 비용 상위 8건 중 <b>${top8yf}건</b>이 모두 영남 현장상담 기록이에요.`,
+      a: '영남 현장상담의 집행 단가와 장소 선정 기준 확인' },
+    { c: 'orange', tag: ['warn', '예산 배분'], h: `현장상담이 집행비의 ${pct(act['현장상담'].amt / all.amt, 0)}, 완료는 ${pct(act['현장상담'].done / all.done, 0)}예요`,
+      p: `현장상담 완료 1건당 <b>${won(act['현장상담'].cpa)}원</b>은 온라인안내(${won(act['온라인안내'].cpa)}원)의 ${(act['현장상담'].cpa / act['온라인안내'].cpa).toFixed(1)}배, 기존고객안내(${won(act['기존고객안내'].cpa)}원)의 <b>${(act['현장상담'].cpa / act['기존고객안내'].cpa).toFixed(1)}배</b>예요. 4개 지역 모두 같은 순서예요.`,
+      a: '현장상담 예산 일부를 기존고객안내·온라인안내로 옮기는 시나리오 검토' },
+    { c: 'gray', tag: ['good', '우수 사례'], h: `기존고객안내가 가장 효율적이고, 충청이 전환율 1위예요`,
+      p: `기존고객안내는 상담 → 접수 <b>${pct(act['기존고객안내'].applRate)}</b>로 활동 중 가장 높아요. 충청은 상담 → 완료 <b>${pct(reg['충청'].l2d)}</b>로 4개 지역 중 가장 높고, 충청·호남 기존고객안내는 1건당 4천원대예요.`,
+      a: '충청 운영 방식을 다른 지역 공유 사례로 정리' },
+    { c: 'gray', tag: ['info', '병목 위치'], h: `차이는 '상담 → 접수' 단계에서 생겨요`,
+      p: `접수 → 완료 전환율은 지역별 <b>${pct(Math.min(...doneRates))}~${pct(Math.max(...doneRates))}</b>, 취소율도 8% 안팎으로 거의 같아요. 반면 상담 → 접수는 ${pct(reg['영남'].applRate)}~${pct(reg['충청'].applRate)}로 크게 달라요.`,
+      a: '개통·처리 단계보다 상담 단계 개선에 집중' },
+    { c: 'gray', tag: ['info', '차이 작음'], h: `상품·기간·요일별 차이는 크지 않아요`,
+      p: `인터넷(${won(prd[0][1].cpa)}원)과 인터넷+B tv(${won(prd[1][1].cpa)}원)의 1건당 비용 차이는 1% 수준이에요. 상반기·하반기, 요일별 하루 평균도 비슷해서 이번 달 성과 차이는 <b>지역과 활동구분</b>이 만들어요.`,
+      a: '다음 달 분석은 지역 × 활동 조합 중심으로' },
+  ];
+  document.getElementById('insights').innerHTML = cards.map(c =>
+    `<article class="ins ${c.c}"><span class="tag ${c.tag[0]}">${c.tag[1]}</span><h3>${c.h}</h3><p>${c.p}</p><div class="act">${c.a}</div></article>`).join('');
+
+  const P = DATA.pending;
+  document.getElementById('notes').innerHTML = [
+    `<li><b>미마감 ${P.length}건 제외</b>: ${P.map(x => `${x.region} ${x.id}`).join(', ')} (모두 8/31 기존고객안내, 합계 ${won(P.reduce((a, x) => a + x.amt, 0))}원). 그래서 8/31 수치가 낮게 보여요. <span class="flag">마감 후 재집계 필요</span></li>`,
+    `<li><b>0603 기록 금액 확인</b>: 4개 지역 모두 8/6 기존고객안내 금액이 1차 0원 → 2차 20,000원으로 같은 값이에요. 1건당 1천원대로 가장 낮게 나오므로 실제 금액인지 확인이 필요해요. <span class="flag">원본 확인 필요</span></li>`,
+    `<li><b>통합 규칙</b>: 원본 400행 중 보고기간 밖 8행, 완전 중복 12행, 이전 차수 8행을 뺐어요(합계 28행). 금액은 충청 ×1,000, 호남 ÷1.1, 강원제주 ×10,000으로 원·VAT 제외로 맞췄어요.</li>`,
+    `<li><b>수도권 미포함</b>: 수도권 취합본은 아직 정리 전이라 이번 대시보드에 넣지 않았어요.</li>`,
+  ].join('');
+}
+
+buildFilters();
+insights();
+render();
+let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 150); });
+</script>
+
+</body>
+</html>
