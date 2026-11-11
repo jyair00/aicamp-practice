@@ -1,0 +1,6027 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SKB 4개지역 8월 캠페인 실적</title>
+<style>
+:root {
+  --skb-red: #EA002C; --skb-orange: #F47725;
+  --text-primary: #202124; --text-secondary: #5F6368;
+  --bg-page: #F7F8FA; --bg-card: #FFFFFF; --border: #E5E7EB;
+  --status-good: #287D4E; --status-warn: #925000; --status-bad: #B42318;
+  --font: Pretendard, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg-page); color: var(--text-primary); font-family: var(--font); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 48px; }
+header.top { background: var(--bg-card); border: 1px solid var(--border); border-top: 4px solid var(--skb-red); border-radius: 10px; padding: 20px 22px; }
+header.top h1 { margin: 0 0 6px; font-size: 22px; line-height: 1.35; word-break: keep-all; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--text-secondary); font-size: 13.5px; }
+.meta b { color: var(--text-primary); font-weight: 600; }
+.notice { margin-top: 10px; display: inline-block; font-size: 13px; color: var(--status-warn); background: #FFF6EE; border: 1px solid #F8D3B6; border-radius: 6px; padding: 3px 10px; }
+.filters { margin: 16px 0 4px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filters .lbl { font-size: 13.5px; color: var(--text-secondary); margin-right: 4px; }
+.chip { font: inherit; font-size: 14px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); border-radius: 999px; padding: 5px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.chip .sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.chip[aria-pressed="true"] { border-color: var(--skb-red); background: #FFF1F3; color: var(--skb-red); font-weight: 600; }
+.chip[aria-pressed="true"]::before { content: "✓"; }
+section { margin-top: 22px; }
+section > h2 { font-size: 17px; margin: 0 0 10px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+section > h2 .step { font-size: 12px; color: var(--skb-red); border: 1px solid var(--skb-red); border-radius: 4px; padding: 0 6px; font-weight: 600; }
+section > h2 small { font-size: 13px; color: var(--text-secondary); font-weight: 400; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+.card .k { font-size: 13.5px; color: var(--text-secondary); }
+.card .v { font-size: 25px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.card .v .u { font-size: 14px; font-weight: 500; margin-left: 3px; color: var(--text-secondary); }
+.card .n { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; }
+.card.main { border-left: 4px solid var(--skb-red); }
+.pending { margin-top: 10px; font-size: 13.5px; color: var(--status-warn); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+.panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+.panel h3 { font-size: 15px; margin: 0 0 4px; }
+.panel .sub { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+svg { display: block; width: 100%; height: auto; }
+svg text { font-family: var(--font); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--text-secondary); margin: 4px 0 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.tbl { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { padding: 7px 9px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th { text-align: left; color: var(--text-secondary); font-weight: 600; background: #FAFAFB; }
+td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
+tfoot td { font-weight: 700; border-top: 2px solid var(--text-primary); }
+.ok { color: var(--status-good); font-weight: 600; }
+.bad { color: var(--status-bad); font-weight: 600; }
+.warn { color: var(--status-warn); font-weight: 600; }
+ul.notes { margin: 6px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--text-secondary); }
+ul.notes li { margin: 2px 0; }
+.foot { margin-top: 28px; font-size: 12.5px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 id="ttl">SK브로드밴드 | 4개 지역 8월 캠페인 실적 대시보드</h1>
+    <div class="meta">
+      <span>기간 <b id="m-period"></b></span>
+      <span>금액 기준 <b id="m-basis"></b></span>
+      <span>생성일 <b id="m-gen"></b></span>
+    </div>
+    <div class="meta" style="margin-top:4px">출처 <span id="m-src"></span></div>
+    <div class="notice">교육용 가상 자료 · 실제 SK브로드밴드 실적이 아닙니다</div>
+  </header>
+
+  <div class="filters" role="group" aria-label="지역 필터">
+    <span class="lbl">지역</span>
+    <div id="chips" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+  </div>
+
+  <section>
+    <h2><span class="step">요약</span>확정 실적 <small id="sum-sub"></small></h2>
+    <div class="cards" id="cards"></div>
+    <div class="pending" id="pend"></div>
+  </section>
+
+  <section>
+    <h2><span class="step">비교</span>지역 · 활동 · 상품별 비교 <small>확정(마감) 행 기준 · 원, 부가세 제외</small></h2>
+    <div class="grid2">
+      <div class="panel"><h3>지역별 확정 집행금액</h3><div class="sub">단위: 원 · 막대 끝 숫자 = 금액</div><div id="ch-region"></div></div>
+      <div class="panel"><h3>지역별 처리완료 1건당 집행금액</h3><div class="sub">단위: 원 · 확정 집행금액 ÷ 확정 처리완료</div><div id="ch-cpc"></div></div>
+      <div class="panel"><h3>활동구분별 확정 집행금액</h3><div class="sub">단위: 원 · 선택한 지역 합계</div><div id="ch-act"></div></div>
+      <div class="panel"><h3>상품별 확정 집행금액</h3><div class="sub">단위: 원 · 선택한 지역 합계</div><div id="ch-prod"></div></div>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <h3>지역별 확정 실적표</h3><div class="sub">금액 단위: 원 · 건수 단위: 건</div>
+      <div class="tbl"><table id="t-region"></table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="step">추이</span>일별 확정 집행금액 <small>2026-08-01 ~ 31 · 단위: 만원</small></h2>
+    <div class="panel">
+      <div class="legend" id="lg-daily"></div>
+      <div class="tbl"><div id="ch-daily" style="min-width:640px"></div></div>
+      <div class="sub" style="margin-top:4px">좁은 화면에서는 차트를 좌우로 밀어서 볼 수 있어요.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="step">점검</span>원본 대조 · 제외 · 단위 변환 <small>전체 지역 기준(필터와 무관)</small></h2>
+    <div class="panel">
+      <h3>원본 = 통합 + 제외 대조</h3><div class="sub">원본 금액은 원 단위·부가세 제외로 환산한 값 · 통합은 미마감 포함</div>
+      <div class="tbl"><table id="t-recon"></table></div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="panel"><h3>미마감 행 (확정 합계에서 제외)</h3><div class="tbl"><table id="t-pend"></table></div></div>
+      <div class="panel"><h3>금액 단위 변환</h3><div class="tbl"><table id="t-conv"></table></div></div>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <h3>통합에서 제외한 행</h3><div class="sub">판정 순서: 보고기간 밖 → 완전 중복 → 이전 차수 · 금액은 원 환산값</div>
+      <div class="tbl"><table id="t-excl"></table></div>
+    </div>
+    <div class="panel" style="margin-top:12px"><h3>참고</h3><ul class="notes" id="notes"></ul></div>
+  </section>
+
+  <div class="foot">SKB AI Camp 실습 결과물 · 외부 라이브러리 없이 이 파일 하나로 열립니다.</div>
+</div>
+
+<script type="application/json" id="dashboard-data">
+{
+ "title": "SK브로드밴드 | 4개 지역 8월 캠페인 실적 대시보드",
+ "period": "2026-08-01 ~ 2026-08-31",
+ "generated": "2026-11-11",
+ "amount_basis": "원, 부가세 제외",
+ "sources": [
+  "영남_8월_캠페인실적.xlsx",
+  "충청_8월_캠페인실적.xlsx",
+  "호남_8월_캠페인실적.xlsx",
+  "강원제주_8월_캠페인실적.csv"
+ ],
+ "colors": {
+  "영남": "#EA002C",
+  "충청": "#F47725",
+  "호남": "#5F6368",
+  "강원제주": "#9AA0A6"
+ },
+ "kpis": [
+  {
+   "label": "확정 집행금액",
+   "value": 47524000,
+   "unit": "원",
+   "note": "확정 368행 · 부가세 제외"
+  },
+  {
+   "label": "확정 상담 건수",
+   "value": 25055,
+   "unit": "건",
+   "note": "확정 368행 합계"
+  },
+  {
+   "label": "확정 접수 건수",
+   "value": 6086,
+   "unit": "건",
+   "note": "취소 519건 별도"
+  },
+  {
+   "label": "확정 처리완료",
+   "value": 4646,
+   "unit": "건",
+   "note": "접수 대비 76.3%"
+  },
+  {
+   "label": "완료 1건당 집행금액",
+   "value": 10229,
+   "unit": "원",
+   "note": "확정 집행금액 ÷ 확정 처리완료"
+  }
+ ],
+ "by_region": [
+  {
+   "region": "영남",
+   "rows": 92,
+   "merged_rows": 93,
+   "amount": 18533000,
+   "leads": 8395,
+   "applications": 1477,
+   "cancels": 131,
+   "completed": 1138,
+   "cost_per_completed": 16286,
+   "pending_rows": 1,
+   "pending_amount": 140200
+  },
+  {
+   "region": "충청",
+   "rows": 92,
+   "merged_rows": 93,
+   "amount": 11114500,
+   "leads": 6474,
+   "applications": 1926,
+   "cancels": 160,
+   "completed": 1459,
+   "cost_per_completed": 7618,
+   "pending_rows": 1,
+   "pending_amount": 86600
+  },
+  {
+   "region": "호남",
+   "rows": 92,
+   "merged_rows": 93,
+   "amount": 9189900,
+   "leads": 5794,
+   "applications": 1555,
+   "cancels": 136,
+   "completed": 1178,
+   "cost_per_completed": 7801,
+   "pending_rows": 1,
+   "pending_amount": 58600
+  },
+  {
+   "region": "강원제주",
+   "rows": 92,
+   "merged_rows": 93,
+   "amount": 8686600,
+   "leads": 4392,
+   "applications": 1128,
+   "cancels": 92,
+   "completed": 871,
+   "cost_per_completed": 9973,
+   "pending_rows": 1,
+   "pending_amount": 82700
+  }
+ ],
+ "by_activity": [
+  {
+   "activity": "온라인안내",
+   "rows": 124,
+   "amount": 14056400,
+   "leads": 10603,
+   "applications": 2304,
+   "completed": 1750,
+   "by_region": {
+    "영남": 5492600,
+    "충청": 3372300,
+    "호남": 2638100,
+    "강원제주": 2553400
+   }
+  },
+  {
+   "activity": "현장상담",
+   "rows": 124,
+   "amount": 23225300,
+   "leads": 6214,
+   "applications": 1547,
+   "completed": 1175,
+   "by_region": {
+    "영남": 8877000,
+    "충청": 5364900,
+    "호남": 4735400,
+    "강원제주": 4248000
+   }
+  },
+  {
+   "activity": "기존고객안내",
+   "rows": 120,
+   "amount": 10242300,
+   "leads": 8238,
+   "applications": 2235,
+   "completed": 1721,
+   "by_region": {
+    "영남": 4163400,
+    "충청": 2377300,
+    "호남": 1816400,
+    "강원제주": 1885200
+   }
+  }
+ ],
+ "by_product": [
+  {
+   "product": "인터넷",
+   "rows": 184,
+   "amount": 23619700,
+   "completed": 2321
+  },
+  {
+   "product": "인터넷+B tv",
+   "rows": 184,
+   "amount": 23904300,
+   "completed": 2325
+  }
+ ],
+ "daily": [
+  {
+   "date": "2026-08-01",
+   "amount": 1559000,
+   "completed": 143,
+   "by_region": {
+    "영남": 596900,
+    "충청": 345600,
+    "호남": 283100,
+    "강원제주": 333400
+   }
+  },
+  {
+   "date": "2026-08-02",
+   "amount": 1813400,
+   "completed": 153,
+   "by_region": {
+    "영남": 698200,
+    "충청": 485400,
+    "호남": 384100,
+    "강원제주": 245700
+   }
+  },
+  {
+   "date": "2026-08-03",
+   "amount": 1516900,
+   "completed": 187,
+   "by_region": {
+    "영남": 628700,
+    "충청": 258500,
+    "호남": 354800,
+    "강원제주": 274900
+   }
+  },
+  {
+   "date": "2026-08-04",
+   "amount": 1547300,
+   "completed": 158,
+   "by_region": {
+    "영남": 703600,
+    "충청": 365000,
+    "호남": 252000,
+    "강원제주": 226700
+   }
+  },
+  {
+   "date": "2026-08-05",
+   "amount": 1552700,
+   "completed": 158,
+   "by_region": {
+    "영남": 651300,
+    "충청": 366000,
+    "호남": 267900,
+    "강원제주": 267500
+   }
+  },
+  {
+   "date": "2026-08-06",
+   "amount": 1412800,
+   "completed": 141,
+   "by_region": {
+    "영남": 593300,
+    "충청": 240600,
+    "호남": 326600,
+    "강원제주": 252300
+   }
+  },
+  {
+   "date": "2026-08-07",
+   "amount": 1593100,
+   "completed": 151,
+   "by_region": {
+    "영남": 741600,
+    "충청": 377800,
+    "호남": 273900,
+    "강원제주": 199800
+   }
+  },
+  {
+   "date": "2026-08-08",
+   "amount": 1477100,
+   "completed": 180,
+   "by_region": {
+    "영남": 562000,
+    "충청": 398300,
+    "호남": 260100,
+    "강원제주": 256700
+   }
+  },
+  {
+   "date": "2026-08-09",
+   "amount": 1779600,
+   "completed": 140,
+   "by_region": {
+    "영남": 700400,
+    "충청": 406200,
+    "호남": 336600,
+    "강원제주": 336400
+   }
+  },
+  {
+   "date": "2026-08-10",
+   "amount": 1563300,
+   "completed": 164,
+   "by_region": {
+    "영남": 512700,
+    "충청": 429300,
+    "호남": 312700,
+    "강원제주": 308600
+   }
+  },
+  {
+   "date": "2026-08-11",
+   "amount": 1299100,
+   "completed": 142,
+   "by_region": {
+    "영남": 523700,
+    "충청": 331600,
+    "호남": 270300,
+    "강원제주": 173500
+   }
+  },
+  {
+   "date": "2026-08-12",
+   "amount": 1539500,
+   "completed": 150,
+   "by_region": {
+    "영남": 539900,
+    "충청": 426500,
+    "호남": 287400,
+    "강원제주": 285700
+   }
+  },
+  {
+   "date": "2026-08-13",
+   "amount": 1442100,
+   "completed": 127,
+   "by_region": {
+    "영남": 402700,
+    "충청": 414300,
+    "호남": 261100,
+    "강원제주": 364000
+   }
+  },
+  {
+   "date": "2026-08-14",
+   "amount": 1645300,
+   "completed": 146,
+   "by_region": {
+    "영남": 660000,
+    "충청": 321700,
+    "호남": 386500,
+    "강원제주": 277100
+   }
+  },
+  {
+   "date": "2026-08-15",
+   "amount": 1566400,
+   "completed": 155,
+   "by_region": {
+    "영남": 631900,
+    "충청": 368000,
+    "호남": 244200,
+    "강원제주": 322300
+   }
+  },
+  {
+   "date": "2026-08-16",
+   "amount": 1391000,
+   "completed": 160,
+   "by_region": {
+    "영남": 469300,
+    "충청": 347900,
+    "호남": 293900,
+    "강원제주": 279900
+   }
+  },
+  {
+   "date": "2026-08-17",
+   "amount": 1473200,
+   "completed": 132,
+   "by_region": {
+    "영남": 517000,
+    "충청": 335200,
+    "호남": 320500,
+    "강원제주": 300500
+   }
+  },
+  {
+   "date": "2026-08-18",
+   "amount": 1700300,
+   "completed": 157,
+   "by_region": {
+    "영남": 672300,
+    "충청": 431100,
+    "호남": 324600,
+    "강원제주": 272300
+   }
+  },
+  {
+   "date": "2026-08-19",
+   "amount": 1491400,
+   "completed": 159,
+   "by_region": {
+    "영남": 533600,
+    "충청": 325000,
+    "호남": 319500,
+    "강원제주": 313300
+   }
+  },
+  {
+   "date": "2026-08-20",
+   "amount": 1327500,
+   "completed": 137,
+   "by_region": {
+    "영남": 473700,
+    "충청": 283400,
+    "호남": 257900,
+    "강원제주": 312500
+   }
+  },
+  {
+   "date": "2026-08-21",
+   "amount": 1348300,
+   "completed": 165,
+   "by_region": {
+    "영남": 457400,
+    "충청": 334500,
+    "호남": 266300,
+    "강원제주": 290100
+   }
+  },
+  {
+   "date": "2026-08-22",
+   "amount": 1716100,
+   "completed": 127,
+   "by_region": {
+    "영남": 698200,
+    "충청": 418000,
+    "호남": 331100,
+    "강원제주": 268800
+   }
+  },
+  {
+   "date": "2026-08-23",
+   "amount": 1525000,
+   "completed": 164,
+   "by_region": {
+    "영남": 524700,
+    "충청": 372500,
+    "호남": 340900,
+    "강원제주": 286900
+   }
+  },
+  {
+   "date": "2026-08-24",
+   "amount": 1650200,
+   "completed": 153,
+   "by_region": {
+    "영남": 775100,
+    "충청": 404600,
+    "호남": 247400,
+    "강원제주": 223100
+   }
+  },
+  {
+   "date": "2026-08-25",
+   "amount": 1716200,
+   "completed": 136,
+   "by_region": {
+    "영남": 750400,
+    "충청": 335800,
+    "호남": 304500,
+    "강원제주": 325500
+   }
+  },
+  {
+   "date": "2026-08-26",
+   "amount": 1474200,
+   "completed": 165,
+   "by_region": {
+    "영남": 463900,
+    "충청": 404500,
+    "호남": 283700,
+    "강원제주": 322100
+   }
+  },
+  {
+   "date": "2026-08-27",
+   "amount": 1436100,
+   "completed": 166,
+   "by_region": {
+    "영남": 547000,
+    "충청": 349800,
+    "호남": 252900,
+    "강원제주": 286400
+   }
+  },
+  {
+   "date": "2026-08-28",
+   "amount": 1619000,
+   "completed": 147,
+   "by_region": {
+    "영남": 621300,
+    "충청": 336800,
+    "호남": 359700,
+    "강원제주": 301200
+   }
+  },
+  {
+   "date": "2026-08-29",
+   "amount": 1469100,
+   "completed": 154,
+   "by_region": {
+    "영남": 559800,
+    "충청": 312100,
+    "호남": 301800,
+    "강원제주": 295400
+   }
+  },
+  {
+   "date": "2026-08-30",
+   "amount": 1681000,
+   "completed": 150,
+   "by_region": {
+    "영남": 760700,
+    "충청": 394200,
+    "호남": 252200,
+    "강원제주": 273900
+   }
+  },
+  {
+   "date": "2026-08-31",
+   "amount": 1197800,
+   "completed": 79,
+   "by_region": {
+    "영남": 561700,
+    "충청": 194300,
+    "호남": 231700,
+    "강원제주": 210100
+   }
+  }
+ ],
+ "reconciliation": [
+  {
+   "region": "영남",
+   "source_rows": 100,
+   "merged_rows": 93,
+   "excluded_rows": 7,
+   "source_amount": 19776500,
+   "merged_amount": 18673200,
+   "excluded_amount": 1103300,
+   "source_leads": 9096,
+   "merged_leads": 8445,
+   "excluded_leads": 651,
+   "source_completed": 1240,
+   "merged_completed": 1145,
+   "excluded_completed": 95,
+   "match": true
+  },
+  {
+   "region": "충청",
+   "source_rows": 100,
+   "merged_rows": 93,
+   "excluded_rows": 7,
+   "source_amount": 11956500,
+   "merged_amount": 11201100,
+   "excluded_amount": 755400,
+   "source_leads": 7021,
+   "merged_leads": 6546,
+   "excluded_leads": 475,
+   "source_completed": 1587,
+   "merged_completed": 1479,
+   "excluded_completed": 108,
+   "match": true
+  },
+  {
+   "region": "호남",
+   "source_rows": 100,
+   "merged_rows": 93,
+   "excluded_rows": 7,
+   "source_amount": 9823400,
+   "merged_amount": 9248500,
+   "excluded_amount": 574900,
+   "source_leads": 6390,
+   "merged_leads": 5870,
+   "excluded_leads": 520,
+   "source_completed": 1300,
+   "merged_completed": 1194,
+   "excluded_completed": 106,
+   "match": true
+  },
+  {
+   "region": "강원제주",
+   "source_rows": 100,
+   "merged_rows": 93,
+   "excluded_rows": 7,
+   "source_amount": 9286300,
+   "merged_amount": 8769300,
+   "excluded_amount": 517000,
+   "source_leads": 4753,
+   "merged_leads": 4436,
+   "excluded_leads": 317,
+   "source_completed": 949,
+   "merged_completed": 883,
+   "excluded_completed": 66,
+   "match": true
+  }
+ ],
+ "pending": {
+  "rows": 4,
+  "amount": 368100,
+  "items": [
+   {
+    "region": "영남",
+    "date": "2026-08-31",
+    "id": "SB26-YNG-3103",
+    "amount": 140200,
+    "memo": "원본 상태 '미마감' → 확정 합계 제외"
+   },
+   {
+    "region": "충청",
+    "date": "2026-08-31",
+    "id": "SB26-CHC-3103",
+    "amount": 86600,
+    "memo": "원본 상태 '잠정' → 확정 합계 제외"
+   },
+   {
+    "region": "호남",
+    "date": "2026-08-31",
+    "id": "SB26-HON-3103",
+    "amount": 58600,
+    "memo": "원본 상태 '작성중' → 확정 합계 제외"
+   },
+   {
+    "region": "강원제주",
+    "date": "2026-08-31",
+    "id": "SB26-GWJ-3103",
+    "amount": 82700,
+    "memo": "원본 상태 'N' → 확정 합계 제외"
+   }
+  ]
+ },
+ "unit_conversions": [
+  {
+   "region": "영남",
+   "rule": "원·VAT제외, 글자(\"120,600\") → 숫자 그대로"
+  },
+  {
+   "region": "충청",
+   "rule": "천원·VAT별도 → ×1,000"
+  },
+  {
+   "region": "호남",
+   "rule": "원·VAT포함 → ÷1.1"
+  },
+  {
+   "region": "강원제주",
+   "rule": "만원·VAT제외 → ×10,000"
+  }
+ ],
+ "exclusions": [
+  {
+   "region": "영남",
+   "reason": "보고기간(2026-08) 밖",
+   "id": "SB26-YNG-OUT1",
+   "rev": 1,
+   "date": "2026-07-31",
+   "amount": 120600
+  },
+  {
+   "region": "영남",
+   "reason": "보고기간(2026-08) 밖",
+   "id": "SB26-YNG-OUT2",
+   "rev": 1,
+   "date": "2026-09-01",
+   "amount": 120600
+  },
+  {
+   "region": "영남",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-YNG-0103",
+   "rev": 1,
+   "date": "2026-08-01",
+   "amount": 183900
+  },
+  {
+   "region": "영남",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-YNG-0202",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 400200
+  },
+  {
+   "region": "영남",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-YNG-0203",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 174500
+  },
+  {
+   "region": "영남",
+   "reason": "이전 차수 (최신 2차 반영)",
+   "id": "SB26-YNG-0201",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 103500
+  },
+  {
+   "region": "영남",
+   "reason": "이전 차수 (최신 2차 반영)",
+   "id": "SB26-YNG-0603",
+   "rev": 1,
+   "date": "2026-08-06",
+   "amount": 0
+  },
+  {
+   "region": "충청",
+   "reason": "보고기간(2026-08) 밖",
+   "id": "SB26-CHC-OUT1",
+   "rev": 1,
+   "date": "2026-07-31",
+   "amount": 121800
+  },
+  {
+   "region": "충청",
+   "reason": "보고기간(2026-08) 밖",
+   "id": "SB26-CHC-OUT2",
+   "rev": 1,
+   "date": "2026-09-01",
+   "amount": 121800
+  },
+  {
+   "region": "충청",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-CHC-0103",
+   "rev": 1,
+   "date": "2026-08-01",
+   "amount": 46400
+  },
+  {
+   "region": "충청",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-CHC-0202",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 219300
+  },
+  {
+   "region": "충청",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-CHC-0203",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 112200
+  },
+  {
+   "region": "충청",
+   "reason": "이전 차수 (최신 2차 반영)",
+   "id": "SB26-CHC-0201",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 133900
+  },
+  {
+   "region": "충청",
+   "reason": "이전 차수 (최신 2차 반영)",
+   "id": "SB26-CHC-0603",
+   "rev": 1,
+   "date": "2026-08-06",
+   "amount": 0
+  },
+  {
+   "region": "호남",
+   "reason": "보고기간(2026-08) 밖",
+   "id": "SB26-HON-OUT1",
+   "rev": 1,
+   "date": "2026-07-31",
+   "amount": 79000
+  },
+  {
+   "region": "호남",
+   "reason": "보고기간(2026-08) 밖",
+   "id": "SB26-HON-OUT2",
+   "rev": 1,
+   "date": "2026-09-01",
+   "amount": 79000
+  },
+  {
+   "region": "호남",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-HON-0103",
+   "rev": 1,
+   "date": "2026-08-01",
+   "amount": 52800
+  },
+  {
+   "region": "호남",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-HON-0202",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 179100
+  },
+  {
+   "region": "호남",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-HON-0203",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 62200
+  },
+  {
+   "region": "호남",
+   "reason": "이전 차수 (최신 2차 반영)",
+   "id": "SB26-HON-0201",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 122800
+  },
+  {
+   "region": "호남",
+   "reason": "이전 차수 (최신 2차 반영)",
+   "id": "SB26-HON-0603",
+   "rev": 1,
+   "date": "2026-08-06",
+   "amount": 0
+  },
+  {
+   "region": "강원제주",
+   "reason": "보고기간(2026-08) 밖",
+   "id": "SB26-GWJ-OUT1",
+   "rev": 1,
+   "date": "2026-07-31",
+   "amount": 116100
+  },
+  {
+   "region": "강원제주",
+   "reason": "보고기간(2026-08) 밖",
+   "id": "SB26-GWJ-OUT2",
+   "rev": 1,
+   "date": "2026-09-01",
+   "amount": 116100
+  },
+  {
+   "region": "강원제주",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-GWJ-0103",
+   "rev": 1,
+   "date": "2026-08-01",
+   "amount": 59100
+  },
+  {
+   "region": "강원제주",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-GWJ-0202",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 79000
+  },
+  {
+   "region": "강원제주",
+   "reason": "완전히 같은 중복 행",
+   "id": "SB26-GWJ-0203",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 71700
+  },
+  {
+   "region": "강원제주",
+   "reason": "이전 차수 (최신 2차 반영)",
+   "id": "SB26-GWJ-0201",
+   "rev": 1,
+   "date": "2026-08-02",
+   "amount": 75000
+  },
+  {
+   "region": "강원제주",
+   "reason": "이전 차수 (최신 2차 반영)",
+   "id": "SB26-GWJ-0603",
+   "rev": 1,
+   "date": "2026-08-06",
+   "amount": 0
+  }
+ ],
+ "notes": [
+  "교육용 가상 자료 · 실제 SK브로드밴드 실적 아님",
+  "기존 통합본(4개지역_8월_캠페인실적_통합.xlsx)은 문서보안(DRM) 파일이라 열지 않고, 지역별 원본 4개로 다시 통합해 사용",
+  "합계 기준: 확정(마감) 행. 미마감 행은 카드·차트 합계에서 제외하고 따로 표시",
+  "제외 사유: 보고기간 밖 8행, 완전히 같은 중복 행 12행, 이전 차수 8행",
+  "영남 '7월 참고요약' 시트는 전월 참고자료라 통합에서 제외",
+  "목표·전월 대비 값은 원본에 없어 표시하지 않음"
+ ]
+}
+</script>
+<script type="application/json" id="raw-data">
+{
+ "regions": [
+  "영남",
+  "충청",
+  "호남",
+  "강원제주"
+ ],
+ "colors": {
+  "영남": "#EA002C",
+  "충청": "#F47725",
+  "호남": "#5F6368",
+  "강원제주": "#9AA0A6"
+ },
+ "dash": {
+  "영남": "",
+  "충청": "",
+  "호남": "6 4",
+  "강원제주": "2 3"
+ },
+ "acts": [
+  "온라인안내",
+  "현장상담",
+  "기존고객안내"
+ ],
+ "rows": [
+  {
+   "region": "영남",
+   "date": "2026-08-01",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0101",
+   "amount": 120600,
+   "leads": 121,
+   "appl": 21,
+   "cancel": 2,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-01",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-0102",
+   "amount": 292400,
+   "leads": 42,
+   "appl": 7,
+   "cancel": 1,
+   "done": 5,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-01",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0103",
+   "amount": 183900,
+   "leads": 84,
+   "appl": 19,
+   "cancel": 0,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-02",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-0201",
+   "amount": 123500,
+   "leads": 66,
+   "appl": 14,
+   "cancel": 2,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-02",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0202",
+   "amount": 400200,
+   "leads": 76,
+   "appl": 13,
+   "cancel": 0,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-02",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-0203",
+   "amount": 174500,
+   "leads": 94,
+   "appl": 18,
+   "cancel": 2,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-03",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0301",
+   "amount": 140900,
+   "leads": 102,
+   "appl": 15,
+   "cancel": 1,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-03",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-0302",
+   "amount": 353400,
+   "leads": 97,
+   "appl": 17,
+   "cancel": 2,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-03",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0303",
+   "amount": 134400,
+   "leads": 76,
+   "appl": 16,
+   "cancel": 2,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-04",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-0401",
+   "amount": 208200,
+   "leads": 98,
+   "appl": 13,
+   "cancel": 2,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-04",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0402",
+   "amount": 340000,
+   "leads": 103,
+   "appl": 18,
+   "cancel": 0,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-04",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-0403",
+   "amount": 155400,
+   "leads": 119,
+   "appl": 25,
+   "cancel": 2,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-05",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0501",
+   "amount": 241600,
+   "leads": 81,
+   "appl": 13,
+   "cancel": 1,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-05",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-0502",
+   "amount": 323400,
+   "leads": 102,
+   "appl": 19,
+   "cancel": 3,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-05",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0503",
+   "amount": 86300,
+   "leads": 108,
+   "appl": 20,
+   "cancel": 1,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-06",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-0601",
+   "amount": 207900,
+   "leads": 87,
+   "appl": 14,
+   "cancel": 2,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-06",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0602",
+   "amount": 365400,
+   "leads": 75,
+   "appl": 14,
+   "cancel": 0,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-06",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-0603",
+   "amount": 20000,
+   "leads": 89,
+   "appl": 22,
+   "cancel": 1,
+   "done": 19,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-07",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0701",
+   "amount": 240400,
+   "leads": 113,
+   "appl": 16,
+   "cancel": 0,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-07",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-0702",
+   "amount": 376800,
+   "leads": 54,
+   "appl": 11,
+   "cancel": 2,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-07",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0703",
+   "amount": 124400,
+   "leads": 89,
+   "appl": 20,
+   "cancel": 1,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-08",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-0801",
+   "amount": 147200,
+   "leads": 163,
+   "appl": 28,
+   "cancel": 0,
+   "done": 24,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-08",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0802",
+   "amount": 246100,
+   "leads": 106,
+   "appl": 19,
+   "cancel": 0,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-08",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-0803",
+   "amount": 168700,
+   "leads": 109,
+   "appl": 23,
+   "cancel": 0,
+   "done": 21,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-09",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0901",
+   "amount": 159100,
+   "leads": 81,
+   "appl": 10,
+   "cancel": 2,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-09",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-0902",
+   "amount": 367800,
+   "leads": 94,
+   "appl": 16,
+   "cancel": 0,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-09",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-0903",
+   "amount": 173500,
+   "leads": 112,
+   "appl": 25,
+   "cancel": 3,
+   "done": 19,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-10",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-1001",
+   "amount": 167500,
+   "leads": 195,
+   "appl": 27,
+   "cancel": 3,
+   "done": 23,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-10",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1002",
+   "amount": 240100,
+   "leads": 69,
+   "appl": 14,
+   "cancel": 1,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-10",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-1003",
+   "amount": 105100,
+   "leads": 115,
+   "appl": 21,
+   "cancel": 3,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-11",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1101",
+   "amount": 138600,
+   "leads": 68,
+   "appl": 9,
+   "cancel": 0,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-11",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-1102",
+   "amount": 200100,
+   "leads": 74,
+   "appl": 13,
+   "cancel": 2,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-11",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1103",
+   "amount": 185000,
+   "leads": 89,
+   "appl": 18,
+   "cancel": 2,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-12",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-1201",
+   "amount": 181500,
+   "leads": 157,
+   "appl": 23,
+   "cancel": 3,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-12",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1202",
+   "amount": 226000,
+   "leads": 60,
+   "appl": 10,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-12",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-1203",
+   "amount": 132400,
+   "leads": 62,
+   "appl": 12,
+   "cancel": 0,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-13",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1301",
+   "amount": 143100,
+   "leads": 93,
+   "appl": 15,
+   "cancel": 2,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-13",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-1302",
+   "amount": 169100,
+   "leads": 44,
+   "appl": 8,
+   "cancel": 1,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-13",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1303",
+   "amount": 90500,
+   "leads": 70,
+   "appl": 13,
+   "cancel": 0,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-14",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-1401",
+   "amount": 212700,
+   "leads": 89,
+   "appl": 11,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-14",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1402",
+   "amount": 270600,
+   "leads": 43,
+   "appl": 8,
+   "cancel": 1,
+   "done": 5,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-14",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-1403",
+   "amount": 176700,
+   "leads": 61,
+   "appl": 13,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-15",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1501",
+   "amount": 116700,
+   "leads": 68,
+   "appl": 10,
+   "cancel": 1,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-15",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-1502",
+   "amount": 406500,
+   "leads": 77,
+   "appl": 13,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-15",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1503",
+   "amount": 108700,
+   "leads": 112,
+   "appl": 21,
+   "cancel": 3,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-16",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-1601",
+   "amount": 144500,
+   "leads": 164,
+   "appl": 21,
+   "cancel": 2,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-16",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1602",
+   "amount": 171200,
+   "leads": 73,
+   "appl": 14,
+   "cancel": 0,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-16",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-1603",
+   "amount": 153600,
+   "leads": 122,
+   "appl": 25,
+   "cancel": 3,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-17",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1701",
+   "amount": 174200,
+   "leads": 140,
+   "appl": 20,
+   "cancel": 1,
+   "done": 18,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-17",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-1702",
+   "amount": 172300,
+   "leads": 92,
+   "appl": 19,
+   "cancel": 3,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-17",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1703",
+   "amount": 170500,
+   "leads": 51,
+   "appl": 10,
+   "cancel": 2,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-18",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-1801",
+   "amount": 205300,
+   "leads": 108,
+   "appl": 16,
+   "cancel": 0,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-18",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1802",
+   "amount": 329400,
+   "leads": 51,
+   "appl": 9,
+   "cancel": 1,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-18",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-1803",
+   "amount": 137600,
+   "leads": 126,
+   "appl": 26,
+   "cancel": 4,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-19",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1901",
+   "amount": 170100,
+   "leads": 113,
+   "appl": 14,
+   "cancel": 0,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-19",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-1902",
+   "amount": 229500,
+   "leads": 96,
+   "appl": 18,
+   "cancel": 0,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-19",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-1903",
+   "amount": 134000,
+   "leads": 61,
+   "appl": 12,
+   "cancel": 2,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-20",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-2001",
+   "amount": 156400,
+   "leads": 93,
+   "appl": 14,
+   "cancel": 2,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-20",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2002",
+   "amount": 189800,
+   "leads": 62,
+   "appl": 10,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-20",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-2003",
+   "amount": 127500,
+   "leads": 138,
+   "appl": 27,
+   "cancel": 3,
+   "done": 18,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-21",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2101",
+   "amount": 103600,
+   "leads": 81,
+   "appl": 13,
+   "cancel": 0,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-21",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-2102",
+   "amount": 232800,
+   "leads": 59,
+   "appl": 11,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-21",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2103",
+   "amount": 121000,
+   "leads": 138,
+   "appl": 31,
+   "cancel": 2,
+   "done": 25,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-22",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-2201",
+   "amount": 203100,
+   "leads": 100,
+   "appl": 13,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-22",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2202",
+   "amount": 343300,
+   "leads": 36,
+   "appl": 6,
+   "cancel": 0,
+   "done": 4,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-22",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-2203",
+   "amount": 151800,
+   "leads": 92,
+   "appl": 21,
+   "cancel": 3,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-23",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2301",
+   "amount": 185300,
+   "leads": 123,
+   "appl": 21,
+   "cancel": 2,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-23",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-2302",
+   "amount": 217000,
+   "leads": 38,
+   "appl": 7,
+   "cancel": 0,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-23",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2303",
+   "amount": 122400,
+   "leads": 139,
+   "appl": 31,
+   "cancel": 3,
+   "done": 26,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-24",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-2401",
+   "amount": 227000,
+   "leads": 112,
+   "appl": 17,
+   "cancel": 3,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-24",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2402",
+   "amount": 384400,
+   "leads": 61,
+   "appl": 10,
+   "cancel": 2,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-24",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-2403",
+   "amount": 163700,
+   "leads": 66,
+   "appl": 14,
+   "cancel": 2,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-25",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2501",
+   "amount": 246000,
+   "leads": 102,
+   "appl": 14,
+   "cancel": 0,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-25",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-2502",
+   "amount": 326200,
+   "leads": 80,
+   "appl": 15,
+   "cancel": 0,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-25",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2503",
+   "amount": 178200,
+   "leads": 70,
+   "appl": 13,
+   "cancel": 2,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-26",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-2601",
+   "amount": 142700,
+   "leads": 76,
+   "appl": 11,
+   "cancel": 2,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-26",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2602",
+   "amount": 194100,
+   "leads": 47,
+   "appl": 8,
+   "cancel": 1,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-26",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-2603",
+   "amount": 127100,
+   "leads": 47,
+   "appl": 10,
+   "cancel": 0,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-27",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2701",
+   "amount": 151600,
+   "leads": 134,
+   "appl": 22,
+   "cancel": 2,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-27",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-2702",
+   "amount": 223800,
+   "leads": 78,
+   "appl": 16,
+   "cancel": 1,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-27",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2703",
+   "amount": 171600,
+   "leads": 123,
+   "appl": 22,
+   "cancel": 4,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-28",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-2801",
+   "amount": 156400,
+   "leads": 129,
+   "appl": 22,
+   "cancel": 1,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-28",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2802",
+   "amount": 387700,
+   "leads": 53,
+   "appl": 10,
+   "cancel": 2,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-28",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-2803",
+   "amount": 77200,
+   "leads": 99,
+   "appl": 20,
+   "cancel": 3,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-29",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2901",
+   "amount": 211900,
+   "leads": 157,
+   "appl": 21,
+   "cancel": 3,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-29",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-2902",
+   "amount": 193800,
+   "leads": 49,
+   "appl": 9,
+   "cancel": 1,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-29",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-2903",
+   "amount": 154100,
+   "leads": 68,
+   "appl": 15,
+   "cancel": 0,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-30",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-3001",
+   "amount": 240900,
+   "leads": 89,
+   "appl": 11,
+   "cancel": 2,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-30",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-3002",
+   "amount": 366200,
+   "leads": 99,
+   "appl": 16,
+   "cancel": 1,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-30",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-YNG-3003",
+   "amount": 153600,
+   "leads": 131,
+   "appl": 27,
+   "cancel": 4,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-31",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-3101",
+   "amount": 224100,
+   "leads": 102,
+   "appl": 13,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-31",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-YNG-3102",
+   "amount": 337600,
+   "leads": 40,
+   "appl": 7,
+   "cancel": 0,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "영남",
+   "date": "2026-08-31",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-YNG-3103",
+   "amount": 140200,
+   "leads": 50,
+   "appl": 10,
+   "cancel": 1,
+   "done": 7,
+   "status": "미마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-01",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0101",
+   "amount": 121800,
+   "leads": 77,
+   "appl": 22,
+   "cancel": 1,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-01",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-0102",
+   "amount": 177400,
+   "leads": 28,
+   "appl": 8,
+   "cancel": 0,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-01",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0103",
+   "amount": 46400,
+   "leads": 77,
+   "appl": 23,
+   "cancel": 1,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-02",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-0201",
+   "amount": 153900,
+   "leads": 56,
+   "appl": 17,
+   "cancel": 0,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-02",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0202",
+   "amount": 219300,
+   "leads": 43,
+   "appl": 14,
+   "cancel": 1,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-02",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-0203",
+   "amount": 112200,
+   "leads": 100,
+   "appl": 34,
+   "cancel": 5,
+   "done": 26,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-03",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0301",
+   "amount": 86800,
+   "leads": 140,
+   "appl": 40,
+   "cancel": 5,
+   "done": 30,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-03",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-0302",
+   "amount": 121900,
+   "leads": 56,
+   "appl": 17,
+   "cancel": 1,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-03",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0303",
+   "amount": 49800,
+   "leads": 90,
+   "appl": 28,
+   "cancel": 1,
+   "done": 23,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-04",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-0401",
+   "amount": 123200,
+   "leads": 61,
+   "appl": 16,
+   "cancel": 0,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-04",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0402",
+   "amount": 141600,
+   "leads": 65,
+   "appl": 21,
+   "cancel": 1,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-04",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-0403",
+   "amount": 100200,
+   "leads": 90,
+   "appl": 29,
+   "cancel": 2,
+   "done": 24,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-05",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0501",
+   "amount": 143000,
+   "leads": 126,
+   "appl": 34,
+   "cancel": 4,
+   "done": 24,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-05",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-0502",
+   "amount": 156900,
+   "leads": 50,
+   "appl": 16,
+   "cancel": 2,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-05",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0503",
+   "amount": 66100,
+   "leads": 88,
+   "appl": 30,
+   "cancel": 3,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-06",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-0601",
+   "amount": 82200,
+   "leads": 49,
+   "appl": 13,
+   "cancel": 0,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-06",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0602",
+   "amount": 138400,
+   "leads": 56,
+   "appl": 17,
+   "cancel": 2,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-06",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-0603",
+   "amount": 20000,
+   "leads": 45,
+   "appl": 18,
+   "cancel": 1,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-07",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0701",
+   "amount": 81500,
+   "leads": 101,
+   "appl": 28,
+   "cancel": 3,
+   "done": 23,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-07",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-0702",
+   "amount": 232500,
+   "leads": 64,
+   "appl": 20,
+   "cancel": 1,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-07",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0703",
+   "amount": 63800,
+   "leads": 38,
+   "appl": 12,
+   "cancel": 2,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-08",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-0801",
+   "amount": 108900,
+   "leads": 74,
+   "appl": 20,
+   "cancel": 3,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-08",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0802",
+   "amount": 177400,
+   "leads": 67,
+   "appl": 21,
+   "cancel": 3,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-08",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-0803",
+   "amount": 112000,
+   "leads": 49,
+   "appl": 17,
+   "cancel": 1,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-09",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0901",
+   "amount": 148900,
+   "leads": 48,
+   "appl": 12,
+   "cancel": 2,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-09",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-0902",
+   "amount": 173400,
+   "leads": 71,
+   "appl": 22,
+   "cancel": 3,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-09",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-0903",
+   "amount": 83900,
+   "leads": 36,
+   "appl": 11,
+   "cancel": 0,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-10",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-1001",
+   "amount": 131600,
+   "leads": 136,
+   "appl": 36,
+   "cancel": 4,
+   "done": 25,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-10",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1002",
+   "amount": 218500,
+   "leads": 27,
+   "appl": 8,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-10",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-1003",
+   "amount": 79200,
+   "leads": 48,
+   "appl": 16,
+   "cancel": 2,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-11",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1101",
+   "amount": 112100,
+   "leads": 114,
+   "appl": 29,
+   "cancel": 4,
+   "done": 19,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-11",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-1102",
+   "amount": 111700,
+   "leads": 52,
+   "appl": 16,
+   "cancel": 2,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-11",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1103",
+   "amount": 107800,
+   "leads": 63,
+   "appl": 21,
+   "cancel": 1,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-12",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-1201",
+   "amount": 113900,
+   "leads": 132,
+   "appl": 35,
+   "cancel": 5,
+   "done": 24,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-12",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1202",
+   "amount": 222900,
+   "leads": 48,
+   "appl": 14,
+   "cancel": 1,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-12",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-1203",
+   "amount": 89700,
+   "leads": 58,
+   "appl": 19,
+   "cancel": 2,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-13",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1301",
+   "amount": 124400,
+   "leads": 68,
+   "appl": 19,
+   "cancel": 3,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-13",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-1302",
+   "amount": 244200,
+   "leads": 28,
+   "appl": 8,
+   "cancel": 0,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-13",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1303",
+   "amount": 45700,
+   "leads": 39,
+   "appl": 12,
+   "cancel": 2,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-14",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-1401",
+   "amount": 129700,
+   "leads": 106,
+   "appl": 29,
+   "cancel": 4,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-14",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1402",
+   "amount": 101300,
+   "leads": 29,
+   "appl": 9,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-14",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-1403",
+   "amount": 90700,
+   "leads": 97,
+   "appl": 32,
+   "cancel": 2,
+   "done": 27,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-15",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1501",
+   "amount": 89500,
+   "leads": 112,
+   "appl": 31,
+   "cancel": 2,
+   "done": 25,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-15",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-1502",
+   "amount": 210200,
+   "leads": 37,
+   "appl": 12,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-15",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1503",
+   "amount": 68300,
+   "leads": 49,
+   "appl": 15,
+   "cancel": 0,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-16",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-1601",
+   "amount": 118900,
+   "leads": 88,
+   "appl": 25,
+   "cancel": 3,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-16",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1602",
+   "amount": 117200,
+   "leads": 28,
+   "appl": 9,
+   "cancel": 0,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-16",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-1603",
+   "amount": 111800,
+   "leads": 97,
+   "appl": 30,
+   "cancel": 2,
+   "done": 27,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-17",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1701",
+   "amount": 78300,
+   "leads": 64,
+   "appl": 16,
+   "cancel": 2,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-17",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-1702",
+   "amount": 154600,
+   "leads": 33,
+   "appl": 9,
+   "cancel": 1,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-17",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1703",
+   "amount": 102300,
+   "leads": 93,
+   "appl": 31,
+   "cancel": 3,
+   "done": 22,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-18",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-1801",
+   "amount": 140100,
+   "leads": 86,
+   "appl": 24,
+   "cancel": 2,
+   "done": 18,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-18",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1802",
+   "amount": 230500,
+   "leads": 38,
+   "appl": 11,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-18",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-1803",
+   "amount": 60500,
+   "leads": 52,
+   "appl": 17,
+   "cancel": 0,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-19",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1901",
+   "amount": 124600,
+   "leads": 94,
+   "appl": 26,
+   "cancel": 4,
+   "done": 18,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-19",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-1902",
+   "amount": 113400,
+   "leads": 42,
+   "appl": 14,
+   "cancel": 2,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-19",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-1903",
+   "amount": 87000,
+   "leads": 69,
+   "appl": 22,
+   "cancel": 2,
+   "done": 19,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-20",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-2001",
+   "amount": 90600,
+   "leads": 49,
+   "appl": 12,
+   "cancel": 2,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-20",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2002",
+   "amount": 146500,
+   "leads": 36,
+   "appl": 10,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-20",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-2003",
+   "amount": 46300,
+   "leads": 54,
+   "appl": 18,
+   "cancel": 1,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-21",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2101",
+   "amount": 67600,
+   "leads": 105,
+   "appl": 31,
+   "cancel": 3,
+   "done": 22,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-21",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-2102",
+   "amount": 167600,
+   "leads": 71,
+   "appl": 22,
+   "cancel": 0,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-21",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2103",
+   "amount": 99300,
+   "leads": 95,
+   "appl": 30,
+   "cancel": 3,
+   "done": 24,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-22",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-2201",
+   "amount": 79800,
+   "leads": 60,
+   "appl": 15,
+   "cancel": 0,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-22",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2202",
+   "amount": 230700,
+   "leads": 68,
+   "appl": 19,
+   "cancel": 2,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-22",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-2203",
+   "amount": 107500,
+   "leads": 64,
+   "appl": 19,
+   "cancel": 3,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-23",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2301",
+   "amount": 142300,
+   "leads": 70,
+   "appl": 20,
+   "cancel": 3,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-23",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-2302",
+   "amount": 180000,
+   "leads": 31,
+   "appl": 9,
+   "cancel": 0,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-23",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2303",
+   "amount": 50200,
+   "leads": 67,
+   "appl": 21,
+   "cancel": 1,
+   "done": 19,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-24",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-2401",
+   "amount": 102400,
+   "leads": 104,
+   "appl": 28,
+   "cancel": 4,
+   "done": 21,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-24",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2402",
+   "amount": 224600,
+   "leads": 72,
+   "appl": 22,
+   "cancel": 1,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-24",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-2403",
+   "amount": 77600,
+   "leads": 79,
+   "appl": 26,
+   "cancel": 0,
+   "done": 22,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-25",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2501",
+   "amount": 78000,
+   "leads": 112,
+   "appl": 29,
+   "cancel": 3,
+   "done": 22,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-25",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-2502",
+   "amount": 178400,
+   "leads": 61,
+   "appl": 18,
+   "cancel": 3,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-25",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2503",
+   "amount": 79400,
+   "leads": 71,
+   "appl": 24,
+   "cancel": 1,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-26",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-2601",
+   "amount": 87100,
+   "leads": 90,
+   "appl": 26,
+   "cancel": 0,
+   "done": 23,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-26",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2602",
+   "amount": 215000,
+   "leads": 64,
+   "appl": 21,
+   "cancel": 0,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-26",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-2603",
+   "amount": 102400,
+   "leads": 100,
+   "appl": 34,
+   "cancel": 2,
+   "done": 24,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-27",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2701",
+   "amount": 122800,
+   "leads": 102,
+   "appl": 25,
+   "cancel": 1,
+   "done": 18,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-27",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-2702",
+   "amount": 132800,
+   "leads": 61,
+   "appl": 20,
+   "cancel": 2,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-27",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2703",
+   "amount": 94200,
+   "leads": 58,
+   "appl": 18,
+   "cancel": 1,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-28",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-2801",
+   "amount": 116600,
+   "leads": 113,
+   "appl": 33,
+   "cancel": 1,
+   "done": 24,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-28",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2802",
+   "amount": 160500,
+   "leads": 32,
+   "appl": 10,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-28",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-2803",
+   "amount": 59700,
+   "leads": 80,
+   "appl": 26,
+   "cancel": 0,
+   "done": 22,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-29",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2901",
+   "amount": 115000,
+   "leads": 125,
+   "appl": 36,
+   "cancel": 1,
+   "done": 28,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-29",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-2902",
+   "amount": 104400,
+   "leads": 71,
+   "appl": 22,
+   "cancel": 4,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-29",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-2903",
+   "amount": 92700,
+   "leads": 77,
+   "appl": 24,
+   "cancel": 2,
+   "done": 19,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-30",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-3001",
+   "amount": 88600,
+   "leads": 100,
+   "appl": 25,
+   "cancel": 3,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-30",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-3002",
+   "amount": 235000,
+   "leads": 63,
+   "appl": 19,
+   "cancel": 3,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-30",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-CHC-3003",
+   "amount": 70600,
+   "leads": 45,
+   "appl": 15,
+   "cancel": 2,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-31",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-3101",
+   "amount": 68200,
+   "leads": 86,
+   "appl": 24,
+   "cancel": 0,
+   "done": 22,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-31",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-CHC-3102",
+   "amount": 126100,
+   "leads": 66,
+   "appl": 20,
+   "cancel": 1,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "충청",
+   "date": "2026-08-31",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-CHC-3103",
+   "amount": 86600,
+   "leads": 72,
+   "appl": 25,
+   "cancel": 2,
+   "done": 20,
+   "status": "미마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-01",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0101",
+   "amount": 79000,
+   "leads": 96,
+   "appl": 23,
+   "cancel": 2,
+   "done": 19,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-01",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-0102",
+   "amount": 151300,
+   "leads": 26,
+   "appl": 7,
+   "cancel": 0,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-01",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0103",
+   "amount": 52800,
+   "leads": 66,
+   "appl": 21,
+   "cancel": 0,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-02",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-0201",
+   "amount": 142800,
+   "leads": 82,
+   "appl": 23,
+   "cancel": 2,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-02",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0202",
+   "amount": 179100,
+   "leads": 59,
+   "appl": 16,
+   "cancel": 2,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-02",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-0203",
+   "amount": 62200,
+   "leads": 57,
+   "appl": 18,
+   "cancel": 2,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-03",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0301",
+   "amount": 95400,
+   "leads": 79,
+   "appl": 20,
+   "cancel": 0,
+   "done": 19,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-03",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-0302",
+   "amount": 197100,
+   "leads": 62,
+   "appl": 17,
+   "cancel": 1,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-03",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0303",
+   "amount": 62300,
+   "leads": 65,
+   "appl": 18,
+   "cancel": 0,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-04",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-0401",
+   "amount": 58000,
+   "leads": 109,
+   "appl": 24,
+   "cancel": 2,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-04",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0402",
+   "amount": 117400,
+   "leads": 35,
+   "appl": 9,
+   "cancel": 1,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-04",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-0403",
+   "amount": 76600,
+   "leads": 43,
+   "appl": 12,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-05",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0501",
+   "amount": 50100,
+   "leads": 58,
+   "appl": 13,
+   "cancel": 1,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-05",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-0502",
+   "amount": 151400,
+   "leads": 34,
+   "appl": 10,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-05",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0503",
+   "amount": 66400,
+   "leads": 86,
+   "appl": 25,
+   "cancel": 3,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-06",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-0601",
+   "amount": 105800,
+   "leads": 69,
+   "appl": 16,
+   "cancel": 2,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-06",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0602",
+   "amount": 200800,
+   "leads": 33,
+   "appl": 9,
+   "cancel": 1,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-06",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-0603",
+   "amount": 20000,
+   "leads": 64,
+   "appl": 23,
+   "cancel": 3,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-07",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0701",
+   "amount": 87800,
+   "leads": 93,
+   "appl": 21,
+   "cancel": 2,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-07",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-0702",
+   "amount": 110700,
+   "leads": 38,
+   "appl": 11,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-07",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0703",
+   "amount": 75400,
+   "leads": 71,
+   "appl": 22,
+   "cancel": 1,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-08",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-0801",
+   "amount": 69800,
+   "leads": 108,
+   "appl": 28,
+   "cancel": 3,
+   "done": 22,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-08",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0802",
+   "amount": 152300,
+   "leads": 59,
+   "appl": 17,
+   "cancel": 2,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-08",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-0803",
+   "amount": 38000,
+   "leads": 88,
+   "appl": 24,
+   "cancel": 4,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-09",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0901",
+   "amount": 92200,
+   "leads": 120,
+   "appl": 27,
+   "cancel": 2,
+   "done": 19,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-09",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-0902",
+   "amount": 175600,
+   "leads": 36,
+   "appl": 10,
+   "cancel": 2,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-09",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-0903",
+   "amount": 68800,
+   "leads": 54,
+   "appl": 17,
+   "cancel": 3,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-10",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-1001",
+   "amount": 56700,
+   "leads": 99,
+   "appl": 24,
+   "cancel": 4,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-10",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1002",
+   "amount": 176300,
+   "leads": 62,
+   "appl": 18,
+   "cancel": 2,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-10",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-1003",
+   "amount": 79700,
+   "leads": 53,
+   "appl": 15,
+   "cancel": 0,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-11",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1101",
+   "amount": 105700,
+   "leads": 67,
+   "appl": 17,
+   "cancel": 1,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-11",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-1102",
+   "amount": 111100,
+   "leads": 29,
+   "appl": 8,
+   "cancel": 1,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-11",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1103",
+   "amount": 53500,
+   "leads": 78,
+   "appl": 23,
+   "cancel": 1,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-12",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-1201",
+   "amount": 88300,
+   "leads": 115,
+   "appl": 27,
+   "cancel": 1,
+   "done": 22,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-12",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1202",
+   "amount": 145000,
+   "leads": 48,
+   "appl": 12,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-12",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-1203",
+   "amount": 54100,
+   "leads": 71,
+   "appl": 22,
+   "cancel": 3,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-13",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1301",
+   "amount": 60800,
+   "leads": 76,
+   "appl": 17,
+   "cancel": 1,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-13",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-1302",
+   "amount": 149600,
+   "leads": 33,
+   "appl": 9,
+   "cancel": 0,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-13",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1303",
+   "amount": 50700,
+   "leads": 88,
+   "appl": 28,
+   "cancel": 3,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-14",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-1401",
+   "amount": 109500,
+   "leads": 90,
+   "appl": 21,
+   "cancel": 2,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-14",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1402",
+   "amount": 190800,
+   "leads": 49,
+   "appl": 12,
+   "cancel": 2,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-14",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-1403",
+   "amount": 86200,
+   "leads": 67,
+   "appl": 21,
+   "cancel": 2,
+   "done": 18,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-15",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1501",
+   "amount": 96600,
+   "leads": 118,
+   "appl": 30,
+   "cancel": 4,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-15",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-1502",
+   "amount": 88900,
+   "leads": 24,
+   "appl": 6,
+   "cancel": 0,
+   "done": 5,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-15",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1503",
+   "amount": 58700,
+   "leads": 57,
+   "appl": 17,
+   "cancel": 1,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-16",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-1601",
+   "amount": 95300,
+   "leads": 49,
+   "appl": 12,
+   "cancel": 2,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-16",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1602",
+   "amount": 145700,
+   "leads": 61,
+   "appl": 16,
+   "cancel": 2,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-16",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-1603",
+   "amount": 52900,
+   "leads": 77,
+   "appl": 24,
+   "cancel": 2,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-17",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1701",
+   "amount": 73800,
+   "leads": 59,
+   "appl": 15,
+   "cancel": 1,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-17",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-1702",
+   "amount": 163400,
+   "leads": 52,
+   "appl": 15,
+   "cancel": 1,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-17",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1703",
+   "amount": 83300,
+   "leads": 31,
+   "appl": 9,
+   "cancel": 1,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-18",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-1801",
+   "amount": 78200,
+   "leads": 118,
+   "appl": 31,
+   "cancel": 0,
+   "done": 24,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-18",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1802",
+   "amount": 189000,
+   "leads": 39,
+   "appl": 10,
+   "cancel": 2,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-18",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-1803",
+   "amount": 57400,
+   "leads": 84,
+   "appl": 24,
+   "cancel": 0,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-19",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1901",
+   "amount": 71200,
+   "leads": 61,
+   "appl": 15,
+   "cancel": 1,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-19",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-1902",
+   "amount": 193100,
+   "leads": 33,
+   "appl": 10,
+   "cancel": 2,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-19",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-1903",
+   "amount": 55200,
+   "leads": 74,
+   "appl": 23,
+   "cancel": 0,
+   "done": 21,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-20",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-2001",
+   "amount": 62100,
+   "leads": 100,
+   "appl": 26,
+   "cancel": 4,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-20",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2002",
+   "amount": 118900,
+   "leads": 50,
+   "appl": 14,
+   "cancel": 1,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-20",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-2003",
+   "amount": 76900,
+   "leads": 60,
+   "appl": 17,
+   "cancel": 2,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-21",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2101",
+   "amount": 108600,
+   "leads": 45,
+   "appl": 11,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-21",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-2102",
+   "amount": 95900,
+   "leads": 60,
+   "appl": 16,
+   "cancel": 2,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-21",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2103",
+   "amount": 61800,
+   "leads": 76,
+   "appl": 23,
+   "cancel": 4,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-22",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-2201",
+   "amount": 96400,
+   "leads": 100,
+   "appl": 23,
+   "cancel": 4,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-22",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2202",
+   "amount": 172000,
+   "leads": 58,
+   "appl": 16,
+   "cancel": 0,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-22",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-2203",
+   "amount": 62700,
+   "leads": 55,
+   "appl": 15,
+   "cancel": 2,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-23",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2301",
+   "amount": 70900,
+   "leads": 44,
+   "appl": 11,
+   "cancel": 2,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-23",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-2302",
+   "amount": 196600,
+   "leads": 54,
+   "appl": 15,
+   "cancel": 0,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-23",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2303",
+   "amount": 73400,
+   "leads": 84,
+   "appl": 23,
+   "cancel": 0,
+   "done": 21,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-24",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-2401",
+   "amount": 68200,
+   "leads": 73,
+   "appl": 17,
+   "cancel": 1,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-24",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2402",
+   "amount": 124200,
+   "leads": 59,
+   "appl": 17,
+   "cancel": 1,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-24",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-2403",
+   "amount": 55000,
+   "leads": 42,
+   "appl": 12,
+   "cancel": 1,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-25",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2501",
+   "amount": 75900,
+   "leads": 77,
+   "appl": 18,
+   "cancel": 2,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-25",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-2502",
+   "amount": 185200,
+   "leads": 41,
+   "appl": 11,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-25",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2503",
+   "amount": 43400,
+   "leads": 48,
+   "appl": 14,
+   "cancel": 1,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-26",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-2601",
+   "amount": 91300,
+   "leads": 73,
+   "appl": 16,
+   "cancel": 1,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-26",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2602",
+   "amount": 145900,
+   "leads": 59,
+   "appl": 18,
+   "cancel": 3,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-26",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-2603",
+   "amount": 46500,
+   "leads": 89,
+   "appl": 28,
+   "cancel": 2,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-27",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2701",
+   "amount": 63500,
+   "leads": 51,
+   "appl": 12,
+   "cancel": 0,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-27",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-2702",
+   "amount": 132900,
+   "leads": 48,
+   "appl": 13,
+   "cancel": 2,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-27",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2703",
+   "amount": 56500,
+   "leads": 54,
+   "appl": 15,
+   "cancel": 1,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-28",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-2801",
+   "amount": 118200,
+   "leads": 76,
+   "appl": 16,
+   "cancel": 3,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-28",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2802",
+   "amount": 202800,
+   "leads": 34,
+   "appl": 9,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-28",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-2803",
+   "amount": 38700,
+   "leads": 42,
+   "appl": 13,
+   "cancel": 1,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-29",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2901",
+   "amount": 95300,
+   "leads": 51,
+   "appl": 12,
+   "cancel": 1,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-29",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-2902",
+   "amount": 137700,
+   "leads": 33,
+   "appl": 9,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-29",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-2903",
+   "amount": 68800,
+   "leads": 51,
+   "appl": 15,
+   "cancel": 2,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-30",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-HON-3001",
+   "amount": 76700,
+   "leads": 56,
+   "appl": 13,
+   "cancel": 0,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-30",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-3002",
+   "amount": 97000,
+   "leads": 27,
+   "appl": 8,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-30",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-HON-3003",
+   "amount": 78500,
+   "leads": 82,
+   "appl": 22,
+   "cancel": 0,
+   "done": 18,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-31",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-3101",
+   "amount": 94000,
+   "leads": 61,
+   "appl": 16,
+   "cancel": 3,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-31",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-HON-3102",
+   "amount": 137700,
+   "leads": 29,
+   "appl": 9,
+   "cancel": 1,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "호남",
+   "date": "2026-08-31",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-HON-3103",
+   "amount": 58600,
+   "leads": 76,
+   "appl": 24,
+   "cancel": 2,
+   "done": 16,
+   "status": "미마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-01",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0101",
+   "amount": 116100,
+   "leads": 47,
+   "appl": 10,
+   "cancel": 0,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-01",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0102",
+   "amount": 158200,
+   "leads": 51,
+   "appl": 13,
+   "cancel": 2,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-01",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0103",
+   "amount": 59100,
+   "leads": 34,
+   "appl": 10,
+   "cancel": 0,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-02",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0201",
+   "amount": 95000,
+   "leads": 43,
+   "appl": 14,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-02",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0202",
+   "amount": 79000,
+   "leads": 35,
+   "appl": 9,
+   "cancel": 0,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-02",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0203",
+   "amount": 71700,
+   "leads": 46,
+   "appl": 14,
+   "cancel": 0,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-03",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0301",
+   "amount": 49800,
+   "leads": 92,
+   "appl": 21,
+   "cancel": 0,
+   "done": 20,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-03",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0302",
+   "amount": 137600,
+   "leads": 41,
+   "appl": 11,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-03",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0303",
+   "amount": 87500,
+   "leads": 34,
+   "appl": 9,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-04",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0401",
+   "amount": 48000,
+   "leads": 46,
+   "appl": 11,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-04",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0402",
+   "amount": 131100,
+   "leads": 28,
+   "appl": 8,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-04",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0403",
+   "amount": 47600,
+   "leads": 49,
+   "appl": 15,
+   "cancel": 2,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-05",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0501",
+   "amount": 111200,
+   "leads": 56,
+   "appl": 12,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-05",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0502",
+   "amount": 88500,
+   "leads": 37,
+   "appl": 10,
+   "cancel": 1,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-05",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0503",
+   "amount": 67800,
+   "leads": 40,
+   "appl": 12,
+   "cancel": 0,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-06",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0601",
+   "amount": 115100,
+   "leads": 37,
+   "appl": 9,
+   "cancel": 0,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-06",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0602",
+   "amount": 117200,
+   "leads": 20,
+   "appl": 6,
+   "cancel": 1,
+   "done": 5,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-06",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0603",
+   "amount": 20000,
+   "leads": 65,
+   "appl": 23,
+   "cancel": 3,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-07",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0701",
+   "amount": 63400,
+   "leads": 51,
+   "appl": 11,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-07",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0702",
+   "amount": 83800,
+   "leads": 47,
+   "appl": 13,
+   "cancel": 2,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-07",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0703",
+   "amount": 52600,
+   "leads": 59,
+   "appl": 16,
+   "cancel": 3,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-08",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0801",
+   "amount": 82400,
+   "leads": 32,
+   "appl": 8,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-08",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0802",
+   "amount": 90200,
+   "leads": 46,
+   "appl": 12,
+   "cancel": 1,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-08",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0803",
+   "amount": 84100,
+   "leads": 33,
+   "appl": 9,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-09",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0901",
+   "amount": 82100,
+   "leads": 66,
+   "appl": 14,
+   "cancel": 1,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-09",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-0902",
+   "amount": 168200,
+   "leads": 41,
+   "appl": 12,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-09",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-0903",
+   "amount": 86100,
+   "leads": 68,
+   "appl": 19,
+   "cancel": 1,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-10",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1001",
+   "amount": 88300,
+   "leads": 81,
+   "appl": 19,
+   "cancel": 2,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-10",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1002",
+   "amount": 171700,
+   "leads": 25,
+   "appl": 6,
+   "cancel": 0,
+   "done": 5,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-10",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1003",
+   "amount": 48600,
+   "leads": 28,
+   "appl": 8,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-11",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1101",
+   "amount": 57000,
+   "leads": 92,
+   "appl": 21,
+   "cancel": 3,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-11",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1102",
+   "amount": 77900,
+   "leads": 34,
+   "appl": 9,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-11",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1103",
+   "amount": 38600,
+   "leads": 34,
+   "appl": 9,
+   "cancel": 1,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-12",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1201",
+   "amount": 54100,
+   "leads": 35,
+   "appl": 8,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-12",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1202",
+   "amount": 175400,
+   "leads": 31,
+   "appl": 8,
+   "cancel": 1,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-12",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1203",
+   "amount": 56200,
+   "leads": 23,
+   "appl": 7,
+   "cancel": 1,
+   "done": 5,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-13",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1301",
+   "amount": 112400,
+   "leads": 37,
+   "appl": 9,
+   "cancel": 1,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-13",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1302",
+   "amount": 169800,
+   "leads": 37,
+   "appl": 9,
+   "cancel": 1,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-13",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1303",
+   "amount": 81800,
+   "leads": 67,
+   "appl": 20,
+   "cancel": 1,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-14",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1401",
+   "amount": 104300,
+   "leads": 41,
+   "appl": 10,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-14",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1402",
+   "amount": 116600,
+   "leads": 47,
+   "appl": 11,
+   "cancel": 2,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-14",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1403",
+   "amount": 56200,
+   "leads": 47,
+   "appl": 13,
+   "cancel": 0,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-15",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1501",
+   "amount": 107600,
+   "leads": 95,
+   "appl": 20,
+   "cancel": 1,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-15",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1502",
+   "amount": 168900,
+   "leads": 48,
+   "appl": 14,
+   "cancel": 0,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-15",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1503",
+   "amount": 45800,
+   "leads": 49,
+   "appl": 13,
+   "cancel": 1,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-16",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1601",
+   "amount": 78100,
+   "leads": 74,
+   "appl": 16,
+   "cancel": 3,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-16",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1602",
+   "amount": 127700,
+   "leads": 29,
+   "appl": 7,
+   "cancel": 1,
+   "done": 5,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-16",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1603",
+   "amount": 74100,
+   "leads": 43,
+   "appl": 11,
+   "cancel": 0,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-17",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1701",
+   "amount": 75100,
+   "leads": 58,
+   "appl": 12,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-17",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1702",
+   "amount": 155000,
+   "leads": 28,
+   "appl": 7,
+   "cancel": 1,
+   "done": 5,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-17",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1703",
+   "amount": 70400,
+   "leads": 44,
+   "appl": 13,
+   "cancel": 2,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-18",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1801",
+   "amount": 102300,
+   "leads": 52,
+   "appl": 11,
+   "cancel": 2,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-18",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1802",
+   "amount": 110200,
+   "leads": 43,
+   "appl": 11,
+   "cancel": 0,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-18",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1803",
+   "amount": 59800,
+   "leads": 49,
+   "appl": 14,
+   "cancel": 1,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-19",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1901",
+   "amount": 102900,
+   "leads": 71,
+   "appl": 18,
+   "cancel": 0,
+   "done": 17,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-19",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-1902",
+   "amount": 136900,
+   "leads": 48,
+   "appl": 12,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-19",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-1903",
+   "amount": 73500,
+   "leads": 63,
+   "appl": 18,
+   "cancel": 3,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-20",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2001",
+   "amount": 67500,
+   "leads": 61,
+   "appl": 15,
+   "cancel": 1,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-20",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2002",
+   "amount": 179400,
+   "leads": 35,
+   "appl": 10,
+   "cancel": 2,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-20",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2003",
+   "amount": 65600,
+   "leads": 47,
+   "appl": 14,
+   "cancel": 0,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-21",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2101",
+   "amount": 115900,
+   "leads": 58,
+   "appl": 12,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-21",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2102",
+   "amount": 109700,
+   "leads": 46,
+   "appl": 12,
+   "cancel": 2,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-21",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2103",
+   "amount": 64500,
+   "leads": 32,
+   "appl": 10,
+   "cancel": 1,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-22",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2201",
+   "amount": 93000,
+   "leads": 47,
+   "appl": 12,
+   "cancel": 2,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-22",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2202",
+   "amount": 94100,
+   "leads": 28,
+   "appl": 8,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-22",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2203",
+   "amount": 81700,
+   "leads": 44,
+   "appl": 13,
+   "cancel": 2,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-23",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2301",
+   "amount": 63800,
+   "leads": 91,
+   "appl": 21,
+   "cancel": 3,
+   "done": 15,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-23",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2302",
+   "amount": 187600,
+   "leads": 31,
+   "appl": 8,
+   "cancel": 0,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-23",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2303",
+   "amount": 35500,
+   "leads": 55,
+   "appl": 16,
+   "cancel": 2,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-24",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2401",
+   "amount": 60700,
+   "leads": 67,
+   "appl": 16,
+   "cancel": 3,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-24",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2402",
+   "amount": 116500,
+   "leads": 50,
+   "appl": 12,
+   "cancel": 2,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-24",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2403",
+   "amount": 45900,
+   "leads": 42,
+   "appl": 12,
+   "cancel": 2,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-25",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2501",
+   "amount": 77500,
+   "leads": 66,
+   "appl": 15,
+   "cancel": 1,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-25",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2502",
+   "amount": 185300,
+   "leads": 23,
+   "appl": 6,
+   "cancel": 1,
+   "done": 4,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-25",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2503",
+   "amount": 62700,
+   "leads": 29,
+   "appl": 8,
+   "cancel": 1,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-26",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2601",
+   "amount": 76400,
+   "leads": 56,
+   "appl": 14,
+   "cancel": 0,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-26",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2602",
+   "amount": 180700,
+   "leads": 49,
+   "appl": 14,
+   "cancel": 0,
+   "done": 11,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-26",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2603",
+   "amount": 65000,
+   "leads": 36,
+   "appl": 10,
+   "cancel": 1,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-27",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2701",
+   "amount": 74500,
+   "leads": 95,
+   "appl": 22,
+   "cancel": 0,
+   "done": 18,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-27",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2702",
+   "amount": 139800,
+   "leads": 47,
+   "appl": 12,
+   "cancel": 2,
+   "done": 8,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-27",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2703",
+   "amount": 72100,
+   "leads": 57,
+   "appl": 16,
+   "cancel": 1,
+   "done": 14,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-28",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2801",
+   "amount": 64700,
+   "leads": 33,
+   "appl": 8,
+   "cancel": 0,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-28",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2802",
+   "amount": 169000,
+   "leads": 43,
+   "appl": 12,
+   "cancel": 2,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-28",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2803",
+   "amount": 67500,
+   "leads": 57,
+   "appl": 16,
+   "cancel": 3,
+   "done": 12,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-29",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2901",
+   "amount": 104300,
+   "leads": 69,
+   "appl": 14,
+   "cancel": 0,
+   "done": 13,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-29",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-2902",
+   "amount": 135300,
+   "leads": 39,
+   "appl": 10,
+   "cancel": 0,
+   "done": 9,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-29",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-2903",
+   "amount": 55800,
+   "leads": 31,
+   "appl": 9,
+   "cancel": 0,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-30",
+   "activity": "온라인안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-3001",
+   "amount": 54600,
+   "leads": 93,
+   "appl": 20,
+   "cancel": 0,
+   "done": 16,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-30",
+   "activity": "현장상담",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-3002",
+   "amount": 131900,
+   "leads": 27,
+   "appl": 8,
+   "cancel": 1,
+   "done": 7,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-30",
+   "activity": "기존고객안내",
+   "product": "인터넷",
+   "id": "SB26-GWJ-3003",
+   "amount": 87400,
+   "leads": 48,
+   "appl": 13,
+   "cancel": 1,
+   "done": 10,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-31",
+   "activity": "온라인안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-3101",
+   "amount": 55300,
+   "leads": 35,
+   "appl": 8,
+   "cancel": 1,
+   "done": 5,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-31",
+   "activity": "현장상담",
+   "product": "인터넷",
+   "id": "SB26-GWJ-3102",
+   "amount": 154800,
+   "leads": 28,
+   "appl": 7,
+   "cancel": 0,
+   "done": 6,
+   "status": "마감"
+  },
+  {
+   "region": "강원제주",
+   "date": "2026-08-31",
+   "activity": "기존고객안내",
+   "product": "인터넷+B tv",
+   "id": "SB26-GWJ-3103",
+   "amount": 82700,
+   "leads": 44,
+   "appl": 13,
+   "cancel": 0,
+   "done": 12,
+   "status": "미마감"
+  }
+ ]
+}
+</script>
+<script>
+(function () {
+  var DD = JSON.parse(document.getElementById("dashboard-data").textContent);
+  var RAW = JSON.parse(document.getElementById("raw-data").textContent);
+  var REG = RAW.regions, COL = RAW.colors, DASH = RAW.dash, ACTS = RAW.acts;
+  var sel = {}; REG.forEach(function (g) { sel[g] = true; });
+  var NS = "http://www.w3.org/2000/svg";
+  function f(n) { return n == null ? "자료 없음" : Math.round(n).toLocaleString("ko-KR"); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+  function el(tag, attrs, text) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+  function $(id) { return document.getElementById(id); }
+
+  $("m-period").textContent = DD.period; $("m-basis").textContent = DD.amount_basis; $("m-gen").textContent = DD.generated;
+  $("m-src").textContent = DD.sources.join(" · ");
+
+  // chips
+  var chips = $("chips");
+  function mkChip(label, key, color) {
+    var b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.dataset.key = key;
+    b.innerHTML = (color ? '<span class="sw" style="background:' + color + '"></span>' : "") + esc(label);
+    b.addEventListener("click", function () {
+      if (key === "__all") { REG.forEach(function (g) { sel[g] = true; }); }
+      else {
+        var allOn = REG.every(function (g) { return sel[g]; });
+        if (allOn) { REG.forEach(function (g) { sel[g] = (g === key); }); }
+        else { sel[key] = !sel[key]; if (!REG.some(function (g) { return sel[g]; })) REG.forEach(function (g) { sel[g] = true; }); }
+      }
+      render();
+    });
+    chips.appendChild(b);
+  }
+  mkChip("전체", "__all"); REG.forEach(function (g) { mkChip(g, g, COL[g]); });
+
+  function sum(rs, k) { return rs.reduce(function (a, r) { return a + r[k]; }, 0); }
+
+  function hbar(container, items, color, valFmt) {
+    // items: [{label, value, color?}]
+    var W = 440, rowH = 36, padL = 96, padR = 112, H = items.length * rowH + 26;
+    var max = Math.max.apply(null, items.map(function (i) { return i.value || 0; }).concat([1]));
+    var svg = el("svg", {viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": container.previousElementSibling.previousElementSibling.textContent});
+    // axis
+    svg.appendChild(el("line", {x1: padL, x2: padL, y1: 4, y2: H - 22, stroke: "#9AA0A6"}));
+    for (var t = 0; t <= 4; t++) {
+      var x = padL + (W - padL - padR) * t / 4;
+      svg.appendChild(el("line", {x1: x, x2: x, y1: 4, y2: H - 22, stroke: "#E5E7EB", "stroke-dasharray": t ? "2 3" : ""}));
+      svg.appendChild(el("text", {x: x, y: H - 6, "font-size": 11, fill: "#5F6368", "text-anchor": "middle"}, f(max * t / 4 / 10000) + "만"));
+    }
+    items.forEach(function (it, i) {
+      var y = 8 + i * rowH, w = (W - padL - padR) * (it.value || 0) / max;
+      svg.appendChild(el("text", {x: padL - 8, y: y + 15, "font-size": 14, fill: "#202124", "text-anchor": "end"}, it.label));
+      var r = el("rect", {x: padL, y: y + 2, width: Math.max(w, 1), height: 20, rx: 3, fill: it.color || color});
+      r.appendChild(el("title", {}, it.label + ": " + valFmt(it.value)));
+      svg.appendChild(r);
+      svg.appendChild(el("text", {x: padL + w + 6, y: y + 16, "font-size": 13.5, fill: "#202124", "font-weight": 600}, valFmt(it.value)));
+    });
+    container.innerHTML = ""; container.appendChild(svg);
+  }
+
+  function lineChart(container, days, regions) {
+    var W = 1100, H = 340, pl = 58, pr = 92, pt = 14, pb = 40;
+    var series = regions.map(function (g) { return {g: g, v: days.map(function (d) { return d.by_region[g] / 10000; })}; });
+    var max = 0; series.forEach(function (s) { s.v.forEach(function (v) { if (v > max) max = v; }); });
+    var step = max > 60 ? 20 : max > 30 ? 10 : 5; max = Math.ceil(max / step) * step || step;
+    var svg = el("svg", {viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "일별 확정 집행금액 선 차트"});
+    var x = function (i) { return pl + (W - pl - pr) * i / (days.length - 1); };
+    var y = function (v) { return pt + (H - pt - pb) * (1 - v / max); };
+    for (var t = 0; t <= max; t += step) {
+      svg.appendChild(el("line", {x1: pl, x2: W - pr, y1: y(t), y2: y(t), stroke: t ? "#E5E7EB" : "#9AA0A6"}));
+      svg.appendChild(el("text", {x: pl - 8, y: y(t) + 4, "font-size": 12, fill: "#5F6368", "text-anchor": "end"}, f(t)));
+    }
+    days.forEach(function (d, i) {
+      if (i % 5 === 0 || i === days.length - 1)
+        svg.appendChild(el("text", {x: x(i), y: H - pb + 18, "font-size": 12, fill: "#5F6368", "text-anchor": "middle"}, d.date.slice(5).replace("-", "/")));
+    });
+    svg.appendChild(el("text", {x: 4, y: pt + 2, "font-size": 11.5, fill: "#5F6368"}, "만원"));
+    svg.appendChild(el("text", {x: (pl + W - pr) / 2, y: H - 4, "font-size": 12, fill: "#5F6368", "text-anchor": "middle"}, "집행일 (2026년 8월)"));
+    var ends = [];
+    series.forEach(function (s) {
+      var d = s.v.map(function (v, i) { return (i ? "L" : "M") + x(i).toFixed(1) + "," + y(v).toFixed(1); }).join("");
+      var p = el("path", {d: d, fill: "none", stroke: COL[s.g], "stroke-width": 2.4, "stroke-dasharray": DASH[s.g], "stroke-linejoin": "round"});
+      svg.appendChild(p);
+      s.v.forEach(function (v, i) {
+        var c = el("circle", {cx: x(i), cy: y(v), r: 3.2, fill: "#fff", stroke: COL[s.g], "stroke-width": 1.6});
+        c.appendChild(el("title", {}, s.g + " " + days[i].date + ": " + f(v * 10000) + "원"));
+        svg.appendChild(c);
+      });
+      ends.push({g: s.g, y: y(s.v[s.v.length - 1])});
+    });
+    ends.sort(function (a, b) { return a.y - b.y; });
+    for (var i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 15) ends[i].y = ends[i - 1].y + 15;
+    ends.forEach(function (e) { svg.appendChild(el("text", {x: W - pr + 8, y: e.y + 4, "font-size": 13, fill: COL[e.g] === "#9AA0A6" ? "#5F6368" : COL[e.g], "font-weight": 700}, e.g)); });
+    container.innerHTML = ""; container.appendChild(svg);
+  }
+
+  function render() {
+    var regs = REG.filter(function (g) { return sel[g]; });
+    var allOn = regs.length === REG.length;
+    Array.prototype.forEach.call(chips.children, function (b) {
+      b.setAttribute("aria-pressed", b.dataset.key === "__all" ? String(allOn) : String(!allOn && sel[b.dataset.key]));
+    });
+    var rows = RAW.rows.filter(function (r) { return sel[r.region]; });
+    var conf = rows.filter(function (r) { return r.status === "마감"; });
+    var pend = rows.filter(function (r) { return r.status === "미마감"; });
+    var A = sum(conf, "amount"), L = sum(conf, "leads"), Ap = sum(conf, "appl"), C = sum(conf, "cancel"), D = sum(conf, "done");
+    $("sum-sub").textContent = (allOn ? "4개 지역 전체" : regs.join("·")) + " · 확정 " + f(conf.length) + "행";
+    var cards = [
+      ["확정 집행금액", A, "원", "확정 " + f(conf.length) + "행 · 부가세 제외", true],
+      ["확정 상담 건수", L, "건", "확정 " + f(conf.length) + "행 합계"],
+      ["확정 접수 건수", Ap, "건", "취소 " + f(C) + "건 별도"],
+      ["확정 처리완료", D, "건", "접수 대비 " + (Ap ? (D / Ap * 100).toFixed(1) : "-") + "%"],
+      ["완료 1건당 집행금액", D ? A / D : null, "원", "확정 집행금액 ÷ 확정 처리완료"]
+    ];
+    $("cards").innerHTML = cards.map(function (c) {
+      return '<div class="card' + (c[4] ? " main" : "") + '"><div class="k">' + c[0] + '</div><div class="v">' + f(c[1]) + '<span class="u">' + c[2] + '</span></div><div class="n">' + esc(c[3]) + "</div></div>";
+    }).join("");
+    $("pend").textContent = "⚠ 미마감 " + f(pend.length) + "행 · " + f(sum(pend, "amount")) + "원은 위 합계에 넣지 않았어요 (점검 영역에 목록).";
+
+    var byR = regs.map(function (g) {
+      var c = conf.filter(function (r) { return r.region === g; }), p = pend.filter(function (r) { return r.region === g; });
+      return {g: g, n: c.length, a: sum(c, "amount"), l: sum(c, "leads"), ap: sum(c, "appl"), ca: sum(c, "cancel"), d: sum(c, "done"), pn: p.length, pa: sum(p, "amount")};
+    });
+    hbar($("ch-region"), byR.map(function (r) { return {label: r.g, value: r.a, color: COL[r.g]}; }), null, function (v) { return f(v) + "원"; });
+    hbar($("ch-cpc"), byR.map(function (r) { return {label: r.g, value: r.d ? r.a / r.d : 0, color: COL[r.g]}; }), null, function (v) { return f(v) + "원"; });
+    // cpc axis ticks in 만 are odd for small values -> override with 원 ticks
+    (function () {
+      var t = $("ch-cpc").querySelectorAll("svg > text[text-anchor='middle']");
+      var max = Math.max.apply(null, byR.map(function (r) { return r.d ? r.a / r.d : 0; }).concat([1]));
+      Array.prototype.forEach.call(t, function (n, i) { n.textContent = f(max * i / 4); });
+    })();
+    hbar($("ch-act"), ACTS.map(function (a) { return {label: a, value: sum(conf.filter(function (r) { return r.activity === a; }), "amount")}; }), "#EA002C", function (v) { return f(v) + "원"; });
+    var prods = []; conf.forEach(function (r) { if (prods.indexOf(r.product) < 0) prods.push(r.product); }); prods.sort();
+    hbar($("ch-prod"), prods.map(function (p) { return {label: p, value: sum(conf.filter(function (r) { return r.product === p; }), "amount")}; }), "#F47725", function (v) { return f(v) + "원"; });
+
+    var th = "<thead><tr><th>지역</th><th class=r>확정 행</th><th class=r>확정 집행금액(원)</th><th class=r>상담</th><th class=r>접수</th><th class=r>취소</th><th class=r>처리완료</th><th class=r>완료당 금액(원)</th><th class=r>미마감 행</th><th class=r>미마감 금액(원)</th></tr></thead>";
+    var tb = byR.map(function (r) {
+      return '<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + COL[r.g] + ';margin-right:6px"></span>' + r.g + "</td><td class=r>" + f(r.n) + "</td><td class=r>" + f(r.a) + "</td><td class=r>" + f(r.l) + "</td><td class=r>" + f(r.ap) + "</td><td class=r>" + f(r.ca) + "</td><td class=r>" + f(r.d) + "</td><td class=r>" + (r.d ? f(r.a / r.d) : "자료 없음") + "</td><td class=r>" + f(r.pn) + "</td><td class=r>" + f(r.pa) + "</td></tr>";
+    }).join("");
+    var tf = "<tfoot><tr><td>합계</td><td class=r>" + f(conf.length) + "</td><td class=r>" + f(A) + "</td><td class=r>" + f(L) + "</td><td class=r>" + f(Ap) + "</td><td class=r>" + f(C) + "</td><td class=r>" + f(D) + "</td><td class=r>" + (D ? f(A / D) : "자료 없음") + "</td><td class=r>" + f(pend.length) + "</td><td class=r>" + f(sum(pend, "amount")) + "</td></tr></tfoot>";
+    $("t-region").innerHTML = th + "<tbody>" + tb + "</tbody>" + tf;
+
+    $("lg-daily").innerHTML = regs.map(function (g) {
+      return '<span><svg width="34" height="10" style="width:34px;display:inline"><line x1="1" x2="33" y1="5" y2="5" stroke="' + COL[g] + '" stroke-width="2.6" stroke-dasharray="' + DASH[g] + '"/></svg>' + g + "</span>";
+    }).join("") + "<span>· 점 위에 올리면 일자별 금액(원)</span>";
+    lineChart($("ch-daily"), DD.daily, regs);
+  }
+
+  // 점검 (static, 전체 지역)
+  (function () {
+    var h = "<thead><tr><th>지역</th><th class=r>원본 행</th><th class=r>통합 행</th><th class=r>제외 행</th><th class=r>원본 금액(원)</th><th class=r>통합 금액(원)</th><th class=r>제외 금액(원)</th><th class=r>원본 처리완료</th><th class=r>통합+제외 완료</th><th>결과</th></tr></thead><tbody>";
+    var t = {sr:0,mr:0,er:0,sa:0,ma:0,ea:0,sc:0,mc:0};
+    DD.reconciliation.forEach(function (r) {
+      t.sr += r.source_rows; t.mr += r.merged_rows; t.er += r.excluded_rows; t.sa += r.source_amount; t.ma += r.merged_amount; t.ea += r.excluded_amount; t.sc += r.source_completed; t.mc += r.merged_completed + r.excluded_completed;
+      h += "<tr><td>" + r.region + "</td><td class=r>" + f(r.source_rows) + "</td><td class=r>" + f(r.merged_rows) + "</td><td class=r>" + f(r.excluded_rows) + "</td><td class=r>" + f(r.source_amount) + "</td><td class=r>" + f(r.merged_amount) + "</td><td class=r>" + f(r.excluded_amount) + "</td><td class=r>" + f(r.source_completed) + "</td><td class=r>" + f(r.merged_completed + r.excluded_completed) + "</td><td>" + (r.match ? '<span class="ok">✓ 일치</span>' : '<span class="bad">✕ 불일치</span>') + "</td></tr>";
+    });
+    h += "</tbody><tfoot><tr><td>합계</td><td class=r>" + f(t.sr) + "</td><td class=r>" + f(t.mr) + "</td><td class=r>" + f(t.er) + "</td><td class=r>" + f(t.sa) + "</td><td class=r>" + f(t.ma) + "</td><td class=r>" + f(t.ea) + "</td><td class=r>" + f(t.sc) + "</td><td class=r>" + f(t.mc) + "</td><td>" + (t.sr === t.mr + t.er && t.sa === t.ma + t.ea ? '<span class="ok">✓ 일치</span>' : '<span class="bad">✕ 불일치</span>') + "</td></tr></tfoot>";
+    $("t-recon").innerHTML = h;
+    var P = DD.pending;
+    $("t-pend").innerHTML = "<thead><tr><th>지역</th><th>집행일</th><th>기록ID</th><th class=r>금액(원)</th><th>상태</th></tr></thead><tbody>" +
+      P.items.map(function (p) { return "<tr><td>" + p.region + "</td><td>" + p.date + "</td><td>" + esc(p.id) + "</td><td class=r>" + f(p.amount) + '</td><td><span class="warn">◷ 미마감</span></td></tr>'; }).join("") +
+      "</tbody><tfoot><tr><td colspan=3>합계 " + f(P.rows) + "행</td><td class=r>" + f(P.amount) + "</td><td></td></tr></tfoot>";
+    $("t-conv").innerHTML = "<thead><tr><th>지역</th><th>원본 단위 → 변환</th></tr></thead><tbody>" +
+      DD.unit_conversions.map(function (c) { return "<tr><td>" + c.region + "</td><td style='white-space:normal'>" + esc(c.rule) + "</td></tr>"; }).join("") + "</tbody>";
+    $("t-excl").innerHTML = "<thead><tr><th>지역</th><th>제외 사유</th><th>기록ID</th><th class=r>차수</th><th>날짜</th><th class=r>금액(원)</th></tr></thead><tbody>" +
+      DD.exclusions.map(function (x) { return "<tr><td>" + x.region + "</td><td>" + esc(x.reason) + "</td><td>" + esc(x.id) + "</td><td class=r>" + x.rev + "</td><td>" + x.date + "</td><td class=r>" + f(x.amount) + "</td></tr>"; }).join("") +
+      "</tbody><tfoot><tr><td colspan=5>합계 " + f(DD.exclusions.length) + "행</td><td class=r>" + f(DD.exclusions.reduce(function (a, x) { return a + x.amount; }, 0)) + "</td></tr></tfoot>";
+    $("notes").innerHTML = DD.notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("");
+  })();
+
+  render();
+})();
+</script>
+</body>
+</html>
