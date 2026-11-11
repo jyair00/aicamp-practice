@@ -1,0 +1,63 @@
+{
+  "title": "SK브로드밴드 | 4개 지역 8월 캠페인 실적 통합",
+  "note": "교육용 가상 자료 · 실제 SK브로드밴드 문서 아님 | 금액: 원, 부가세 제외",
+  "period": "2026-08",
+  "input_dir": "03_실적데이터",
+  "output": "03_실적데이터/4개지역_8월_캠페인실적_통합.xlsx",
+  "campaign_map": { "C01": "온라인안내", "C02": "현장상담", "C03": "기존고객안내" },
+  "product_map": { "인터넷": "인터넷", "인터넷+B tv": "인터넷+B tv", "BB": "인터넷", "BBTV": "인터넷+B tv" },
+  "status_map": {
+    "마감": "마감", "확정": "마감", "Y": "마감",
+    "미마감": "미마감", "잠정": "미마감", "작성중": "미마감", "N": "미마감"
+  },
+  "sources": [
+    {
+      "region": "영남",
+      "file": "영남_8월_캠페인실적.xlsx",
+      "header_row": 5,
+      "skip_sheets": ["7월 참고요약"],
+      "date_format": "%Y/%m/%d",
+      "unit_note": "원·VAT제외, 글자(\"120,600\") → 숫자 그대로",
+      "columns": {
+        "id": "정산ID", "rev": "revision", "date": "작업일", "campaign": "캠페인", "product": "상품",
+        "amount": "집행비_원_세전", "lead": "상담", "appl": "신청접수", "cancel": "취소건수", "done": "완료처리", "status": "마감상태"
+      }
+    },
+    {
+      "region": "충청",
+      "file": "충청_8월_캠페인실적.xlsx",
+      "header_row": 4,
+      "date_format": "%Y.%m.%d",
+      "amount_multiply": 1000,
+      "unit_note": "천원·VAT별도 → ×1,000",
+      "campaign_from": { "source": "sheet_note", "pattern": "캠페인:\\s*(C\\d+)" },
+      "columns": {
+        "id": "관리번호", "rev": "ver", "date": "기준일", "product": "상품명",
+        "amount": "사용금액(천원/VAT별도)", "lead": "상담수", "appl": "신청수", "cancel": "취소수", "done": "완료수", "status": "확정상태"
+      }
+    },
+    {
+      "region": "호남",
+      "file": "호남_8월_캠페인실적.xlsx",
+      "header_row": 6,
+      "amount_divide": 1.1,
+      "unit_note": "원·VAT포함 → ÷1.1",
+      "columns": {
+        "id": "건별번호", "rev": "차수", "date": "실적일자", "campaign": "캠페인ID", "product": "서비스",
+        "amount": "지출총액(원/VAT포함)", "lead": "문의상담", "appl": "신청", "cancel": "신청취소", "done": "완료", "status": "마감"
+      }
+    },
+    {
+      "region": "강원제주",
+      "file": "강원제주_8월_캠페인실적.csv",
+      "header_row": 1,
+      "date_format": "%Y%m%d",
+      "amount_multiply": 10000,
+      "unit_note": "만원·VAT제외 → ×10,000",
+      "columns": {
+        "id": "report_id", "rev": "revision", "date": "report_dt", "campaign": "campaign_cd", "product": "svc_name",
+        "amount": "cost_10k_krw_ex_vat", "lead": "lead_cnt", "appl": "appl_cnt", "cancel": "cancel_cnt", "done": "done_cnt", "status": "lock_status"
+      }
+    }
+  ]
+}
