@@ -65,6 +65,26 @@ model: inherit
 
 - **외부 라이브러리·CDN·외부 폰트를 쓰지 않는다.** 사내망에서도 열리도록 차트는 인라인 SVG와 순수 JavaScript로 그린다.
 - 데이터는 HTML 안에 JSON으로 넣는다. 파일 하나만 있으면 열린다.
+- **다음 단계(`ppt-builder`)에 넘길 데이터 블록을 반드시 넣는다.** 검증이 끝난 값만 담는다.
+
+  ```html
+  <script type="application/json" id="dashboard-data">
+  {
+    "title": "...", "period": "2026-08-01 ~ 2026-08-31", "generated": "2026-11-11",
+    "amount_basis": "원, 부가세 제외", "sources": ["영남_8월_캠페인실적.xlsx", "..."],
+    "colors": {"영남": "#EA002C", "충청": "#F47725", "...": "..."},
+    "kpis": [{"label": "확정 집행금액", "value": 47524000, "unit": "원", "note": "확정 368행"}],
+    "by_region": [{"region": "영남", "rows": 92, "amount": 18533000, "completed": 1138, "...": 0}],
+    "by_activity": [], "daily": [],
+    "reconciliation": [{"region": "영남", "source_rows": 100, "merged_rows": 93, "excluded_rows": 7, "source_amount": 0, "merged_amount": 0, "excluded_amount": 0, "match": true}],
+    "pending": {"rows": 4, "amount": 368100},
+    "unit_conversions": [], "exclusions": [], "notes": []
+  }
+  </script>
+  ```
+
+  - 키 이름은 위 예시를 따르고, 자료가 없는 항목은 빈 배열로 둔다. 숫자는 글자가 아닌 숫자로 넣는다.
+  - 화면 계산용 원자료 JSON과 따로 두어도 된다. 이 블록의 합계는 화면 합계와 같아야 한다.
 - 저장 위치는 입력 데이터가 있는 폴더, 이름은 `<주제>_대시보드.html`. 같은 이름이 있으면 덮어쓰지 말고 `_v2`처럼 새 이름을 쓴다.
   - 이름은 작업을 시작할 때 한 번만 정한다. 같은 작업 중에 다시 저장할 때는 그 파일을 다시 쓰고, 번호를 또 올리지 않는다.
 - 보조 스크립트는 scratchpad에 저장한다. 이름은 Python 기본 모듈과 겹치지 않게 짓는다. (`inspect.py`, `json.py`, `csv.py` 금지 → `check_files.py`처럼 짓기)
@@ -72,10 +92,15 @@ model: inherit
 
 ## 6. 마무리 점검과 보고
 
-- 저장한 HTML을 다시 읽어 데이터 JSON의 건수·합계가 2단계 값과 같은지 확인한다.
+- 저장한 HTML을 다시 읽어 데이터 JSON의 건수·합계가 2단계 값과 같은지 확인한다. `dashboard-data` 블록도 JSON으로 읽어서 같은 값인지 확인한다.
 - `<title>`, 한글 인코딩(`<meta charset="utf-8">`), 범례·단위 표시를 확인한다.
 - 보고 형식 (부드러운 존댓말, 결론부터):
   - 결과 파일 경로
   - 원본 건수·합계와 대시보드 값의 일치 여부
   - 단위 변환·제외한 행 등 처리 내역
   - 확인이 필요한 점 (있을 때만)
+  - 마지막 줄: "PPT가 필요하면 이 대시보드로 `ppt-builder`를 이어서 실행할 수 있어요."
+
+## 7. 다음 단계 연결
+
+- 이 에이전트는 다른 서브에이전트를 직접 부르지 않는다. PPT까지 요청받았으면 대시보드를 끝낸 뒤 결과 파일 경로를 보고하고, 메인 세션이 `ppt-builder`에 그 경로를 넘긴다.
