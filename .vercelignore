@@ -1,18 +1,4 @@
-# Vercel 배포에서 뺄 파일 (GitHub에 안 올리는 것과 같은 기준)
-# API 키 등 비밀값
-.env
-.env.local
-.env.*.local
-
-# 이 폴더 전용 Python 공간·캐시
-.venv/
-__pycache__/
-
-# 이 PC 전용 Claude 설정
-.claude/settings.local.json
-
-# 엑셀·파워포인트 임시 파일
-~$*
-
-# Vercel 연결 정보
-.vercel
+# Vercel에는 점심 메뉴 투표 앱(index.html)만 배포한다.
+# 나머지 파일·폴더(실습 자료, 회의록, .env 등)는 모두 제외.
+/*
+!index.html
