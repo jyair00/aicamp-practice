@@ -15,6 +15,7 @@
     --border: #E5E7EB;
     --bar-base: #C4C7CC;
     --status-good: #287D4E;
+    --status-warn: #925000;
     --status-bad: #B42318;
   }
   * { box-sizing: border-box; }
@@ -30,6 +31,10 @@
   header .tag { color: var(--skb-red); font-weight: 700; font-size: 14px; }
   h1 { margin: 4px 0 4px; font-size: 26px; }
   header p { margin: 0; color: var(--text-secondary); font-size: 14px; }
+  .conn { display: inline-block; margin-top: 8px; font-size: 13px; font-weight: 600; }
+  .conn.good { color: var(--status-good); }
+  .conn.warn { color: var(--status-warn); }
+  .conn.bad { color: var(--status-bad); }
   .card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -57,6 +62,7 @@
     background: var(--bg-card);
     color: var(--text-primary);
   }
+  button:disabled { opacity: .5; cursor: wait; }
   button.primary { background: var(--skb-red); border-color: var(--skb-red); color: #fff; font-weight: 600; }
   button.primary:hover { filter: brightness(0.92); }
   button.ghost:hover { border-color: var(--text-secondary); }
@@ -99,7 +105,8 @@
   <header>
     <div class="tag">SKB AI Camp</div>
     <h1>우리 팀 점심 메뉴 투표</h1>
-    <p>데이터는 이 브라우저에만 저장돼요. 서버 전송·로그인은 없어요.</p>
+    <p id="storageNote">투표 결과를 불러오는 중이에요.</p>
+    <span id="conn" class="conn" role="status"></span>
   </header>
 
   <section class="card">
@@ -133,103 +140,208 @@
   </section>
 
   <div class="footer-actions">
+    <button type="button" class="ghost" id="refreshBtn">새로고침</button>
     <button type="button" class="ghost" id="resetVotes">투표만 초기화</button>
     <button type="button" class="ghost" id="resetAll">전체 초기화</button>
   </div>
 </div>
 
 <script>
+// ===== Supabase 설정 =====
+// Supabase 대시보드 → Project Settings → API(또는 API Keys)에서 복사해 넣어요.
+// KEY에는 공개용 키(anon 또는 sb_publishable_...)만 넣어요. service_role·secret 키는 절대 넣지 마세요.
+var SUPABASE_URL = '';
+var SUPABASE_KEY = '';
+// 다른 사람이 투표한 결과를 몇 초마다 다시 불러올지
+var REFRESH_SECONDS = 5;
+
 (function () {
-  var KEY = 'skb-lunch-vote-v1';
-  // state: { menus: [{id, name}], votes: { voterName: menuId } }
-  var state = load();
-
-  function load() {
-    try {
-      var raw = localStorage.getItem(KEY);
-      if (raw) {
-        var s = JSON.parse(raw);
-        if (s && Array.isArray(s.menus) && s.votes && typeof s.votes === 'object') return s;
-      }
-    } catch (e) {}
-    return { menus: [], votes: {} };
-  }
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
-  }
-  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
-  function norm(s) { return s.trim().replace(/\s+/g, ' '); }
-
-  function counts() {
-    var c = {};
-    state.menus.forEach(function (m) { c[m.id] = 0; });
-    Object.keys(state.votes).forEach(function (v) {
-      var id = state.votes[v];
-      if (id in c) c[id]++;
-    });
-    return c;
-  }
-  function votersOf(id) {
-    return Object.keys(state.votes).filter(function (v) { return state.votes[v] === id; });
-  }
-
-  function setMsg(el, text, kind) {
-    el.textContent = text;
-    el.className = 'msg ' + (kind || '');
-  }
-
   var $ = function (id) { return document.getElementById(id); };
   var menuInput = $('menuInput'), voterInput = $('voterInput');
+  var state = { menus: [], votes: {} }; // menus: [{id, name}], votes: { voter: menuId }
+
+  // ---------- 저장소: Supabase(설정됨) 또는 이 브라우저(설정 전) ----------
+  function isSecretKey(k) {
+    if (/^sb_secret_/.test(k)) return true;
+    try {
+      var p = JSON.parse(atob(k.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      return p && p.role === 'service_role';
+    } catch (e) { return false; }
+  }
+  var useCloud = !!(SUPABASE_URL && SUPABASE_KEY) && !isSecretKey(SUPABASE_KEY);
+  var keyBlocked = !!SUPABASE_KEY && isSecretKey(SUPABASE_KEY);
+  var base = SUPABASE_URL.replace(/\/+$/, '') + '/rest/v1/';
+
+  function api(path, opts) {
+    opts = opts || {};
+    var headers = { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' };
+    if (opts.prefer) headers.Prefer = opts.prefer;
+    return fetch(base + path, { method: opts.method || 'GET', headers: headers, body: opts.body ? JSON.stringify(opts.body) : undefined })
+      .then(function (r) {
+        if (r.ok) return r.status === 204 ? null : r.text().then(function (t) { return t ? JSON.parse(t) : null; });
+        return r.json().catch(function () { return {}; }).then(function (j) {
+          var err = new Error(j.message || ('HTTP ' + r.status));
+          err.status = r.status; err.code = j.code;
+          throw err;
+        });
+      });
+  }
+
+  var LOCAL_KEY = 'skb-lunch-vote-v1';
+  var memory = { menus: [], votes: {} }; // 브라우저 저장이 막힌 경우 대비
+  function localLoad() {
+    try {
+      var s = JSON.parse(localStorage.getItem(LOCAL_KEY) || 'null');
+      if (s && Array.isArray(s.menus) && s.votes && typeof s.votes === 'object') memory = s;
+    } catch (e) {}
+    return JSON.parse(JSON.stringify(memory));
+  }
+  function localSave(s) { memory = s; try { localStorage.setItem(LOCAL_KEY, JSON.stringify(s)); } catch (e) {} }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+  var store = useCloud ? {
+    load: function () {
+      return Promise.all([
+        api('lunch_menus?select=id,name&order=created_at.asc'),
+        api('lunch_votes?select=voter,menu_id')
+      ]).then(function (res) {
+        var votes = {};
+        res[1].forEach(function (v) { votes[v.voter] = v.menu_id; });
+        return { menus: res[0], votes: votes };
+      });
+    },
+    addMenu: function (name) {
+      return api('lunch_menus', { method: 'POST', body: { name: name }, prefer: 'return=minimal' });
+    },
+    vote: function (voter, id) {
+      return api('lunch_votes?on_conflict=voter', {
+        method: 'POST', prefer: 'resolution=merge-duplicates,return=minimal',
+        body: { voter: voter, menu_id: id, updated_at: new Date().toISOString() }
+      });
+    },
+    removeMenu: function (id) { return api('lunch_menus?id=eq.' + encodeURIComponent(id), { method: 'DELETE' }); },
+    resetVotes: function () { return api('lunch_votes?voter=not.is.null', { method: 'DELETE' }); },
+    resetAll: function () {
+      return api('lunch_votes?voter=not.is.null', { method: 'DELETE' })
+        .then(function () { return api('lunch_menus?id=not.is.null', { method: 'DELETE' }); });
+    }
+  } : {
+    load: function () { return Promise.resolve(localLoad()); },
+    addMenu: function (name) {
+      var s = localLoad();
+      if (s.menus.some(function (m) { return m.name.toLowerCase() === name.toLowerCase(); })) {
+        var e = new Error('dup'); e.code = '23505'; return Promise.reject(e);
+      }
+      s.menus.push({ id: uid(), name: name }); localSave(s); return Promise.resolve();
+    },
+    vote: function (voter, id) { var s = localLoad(); s.votes[voter] = id; localSave(s); return Promise.resolve(); },
+    removeMenu: function (id) {
+      var s = localLoad();
+      s.menus = s.menus.filter(function (m) { return m.id !== id; });
+      Object.keys(s.votes).forEach(function (v) { if (s.votes[v] === id) delete s.votes[v]; });
+      localSave(s); return Promise.resolve();
+    },
+    resetVotes: function () { var s = localLoad(); s.votes = {}; localSave(s); return Promise.resolve(); },
+    resetAll: function () { localSave({ menus: [], votes: {} }); return Promise.resolve(); }
+  };
+
+  // ---------- 연결 상태 표시 ----------
+  function setConn(kind, text) { var c = $('conn'); c.className = 'conn ' + kind; c.textContent = text; }
+  if (useCloud) {
+    $('storageNote').textContent = '투표 결과는 팀 공용 저장소(Supabase)에 저장돼요. ' + REFRESH_SECONDS + '초마다 최신 결과로 바뀌어요.';
+  } else {
+    $('storageNote').textContent = '공용 저장소 연결 전이라, 지금은 이 브라우저에만 저장돼요.';
+    setConn(keyBlocked ? 'bad' : 'warn', keyBlocked
+      ? '✕ 비밀 키(service_role/secret)가 들어 있어 연결을 막았어요. 공개 키로 바꿔 주세요.'
+      : '! 공용 저장소 미연결 (이 브라우저 전용)');
+  }
+
+  function friendly(err) {
+    if (!navigator.onLine) return '인터넷 연결을 확인해 주세요.';
+    if (err && (err.status === 404 || err.code === 'PGRST205' || err.code === '42P01')) return '저장소에 투표용 표가 없어요. supabase_setup.sql을 먼저 실행해 주세요.';
+    if (err && (err.status === 401 || err.status === 403 || err.code === '42501')) return '저장소 접근 권한이 없어요. 키와 supabase_setup.sql 실행 여부를 확인해 주세요.';
+    return '저장소와 통신하지 못했어요. 잠시 뒤 다시 시도해 주세요.';
+  }
+
+  var loading = false;
+  function refresh() {
+    if (loading) return Promise.resolve();
+    loading = true;
+    return store.load().then(function (s) {
+      state = s;
+      if (useCloud) {
+        var t = new Date();
+        setConn('good', '✓ 공용 저장소 연결됨 · ' + String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0') + ':' + String(t.getSeconds()).padStart(2, '0') + ' 기준');
+      }
+      render();
+    }).catch(function (e) {
+      setConn('bad', '✕ ' + friendly(e));
+    }).then(function () { loading = false; });
+  }
+
+  // ---------- 동작 ----------
+  function setMsg(el, text, kind) { el.textContent = text; el.className = 'msg ' + (kind || ''); }
+  function norm(s) { return s.trim().replace(/\s+/g, ' '); }
+  function busy(on) { document.querySelectorAll('button').forEach(function (b) { b.disabled = on; }); }
+  function menuById(id) { return state.menus.find(function (m) { return m.id === id; }); }
 
   $('addForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var name = norm(menuInput.value);
     if (!name) { setMsg($('addMsg'), '메뉴 이름을 입력해 주세요.', 'err'); return; }
-    var dup = state.menus.some(function (m) { return m.name.toLowerCase() === name.toLowerCase(); });
-    if (dup) { setMsg($('addMsg'), '‘' + name + '’은(는) 이미 있는 메뉴예요.', 'err'); return; }
-    state.menus.push({ id: uid(), name: name });
-    save();
-    menuInput.value = '';
-    setMsg($('addMsg'), '‘' + name + '’ 메뉴를 추가했어요.', 'ok');
-    render();
-    menuInput.focus();
+    if (state.menus.some(function (m) { return m.name.toLowerCase() === name.toLowerCase(); })) {
+      setMsg($('addMsg'), '‘' + name + '’은(는) 이미 있는 메뉴예요.', 'err'); return;
+    }
+    busy(true);
+    store.addMenu(name).then(function () {
+      menuInput.value = '';
+      setMsg($('addMsg'), '‘' + name + '’ 메뉴를 추가했어요.', 'ok');
+      return refresh();
+    }).catch(function (err) {
+      setMsg($('addMsg'), err.code === '23505' ? '‘' + name + '’은(는) 이미 있는 메뉴예요.' : friendly(err), 'err');
+    }).then(function () { busy(false); menuInput.focus(); });
   });
 
   function vote(id) {
     var voter = norm(voterInput.value);
     var msg = $('voteMsg');
     if (!voter) { setMsg(msg, '먼저 내 이름을 입력해 주세요.', 'err'); voterInput.focus(); return; }
-    var menu = state.menus.find(function (m) { return m.id === id; });
-    var prev = state.votes[voter];
-    if (prev === id) { setMsg(msg, voter + '님은 이미 ‘' + menu.name + '’에 투표했어요.', 'err'); return; }
-    state.votes[voter] = id;
-    save();
-    var prevMenu = state.menus.find(function (m) { return m.id === prev; });
-    setMsg(msg, prevMenu
-      ? voter + '님의 표를 ‘' + prevMenu.name + '’에서 ‘' + menu.name + '’(으)로 옮겼어요.'
-      : voter + '님이 ‘' + menu.name + '’에 투표했어요.', 'ok');
-    render();
+    var menu = menuById(id);
+    var prevMenu = menuById(state.votes[voter]);
+    if (state.votes[voter] === id) { setMsg(msg, voter + '님은 이미 ‘' + menu.name + '’에 투표했어요.', 'err'); return; }
+    busy(true);
+    store.vote(voter, id).then(function () {
+      setMsg(msg, prevMenu
+        ? voter + '님의 표를 ‘' + prevMenu.name + '’에서 ‘' + menu.name + '’(으)로 옮겼어요.'
+        : voter + '님이 ‘' + menu.name + '’에 투표했어요.', 'ok');
+      return refresh();
+    }).catch(function (err) {
+      setMsg(msg, err.code === '23503' ? '그 사이에 메뉴가 삭제됐어요. 목록을 새로 불러올게요.' : friendly(err), 'err');
+      return refresh();
+    }).then(function () { busy(false); });
   }
 
   function removeMenu(id) {
-    var menu = state.menus.find(function (m) { return m.id === id; });
-    var n = votersOf(id).length;
-    if (!confirm('‘' + menu.name + '’ 메뉴를 삭제할까요?' + (n ? ' 받은 ' + n + '표도 함께 사라져요.' : ''))) return;
-    state.menus = state.menus.filter(function (m) { return m.id !== id; });
-    Object.keys(state.votes).forEach(function (v) { if (state.votes[v] === id) delete state.votes[v]; });
-    save();
-    render();
+    var menu = menuById(id);
+    var n = Object.keys(state.votes).filter(function (v) { return state.votes[v] === id; }).length;
+    if (!confirm('‘' + menu.name + '’ 메뉴를 삭제할까요?' + (n ? ' 받은 ' + n + '표도 함께 사라져요.' : '') + (useCloud ? ' 팀 전체 결과에서 지워져요.' : ''))) return;
+    busy(true);
+    store.removeMenu(id).then(refresh).catch(function (err) { setMsg($('voteMsg'), friendly(err), 'err'); })
+      .then(function () { busy(false); });
   }
 
-  $('resetVotes').addEventListener('click', function () {
-    if (!confirm('모든 표를 지울까요? 메뉴는 남아요.')) return;
-    state.votes = {}; save(); setMsg($('voteMsg'), '투표를 초기화했어요.', 'ok'); render();
-  });
-  $('resetAll').addEventListener('click', function () {
-    if (!confirm('메뉴와 표를 모두 지울까요?')) return;
-    state = { menus: [], votes: {} }; save(); setMsg($('voteMsg'), '전체를 초기화했어요.', 'ok'); render();
-  });
+  function confirmReset(text, fn, done) {
+    if (!confirm(text + (useCloud ? ' 팀 전체 결과에서 지워져요.' : ''))) return;
+    busy(true);
+    fn().then(function () { setMsg($('voteMsg'), done, 'ok'); return refresh(); })
+      .catch(function (err) { setMsg($('voteMsg'), friendly(err), 'err'); })
+      .then(function () { busy(false); });
+  }
+  $('resetVotes').addEventListener('click', function () { confirmReset('모든 표를 지울까요? 메뉴는 남아요.', store.resetVotes, '투표를 초기화했어요.'); });
+  $('resetAll').addEventListener('click', function () { confirmReset('메뉴와 표를 모두 지울까요?', store.resetAll, '전체를 초기화했어요.'); });
+  $('refreshBtn').addEventListener('click', function () { refresh(); });
 
+  // ---------- 화면 그리기 ----------
   function el(tag, cls, text) {
     var e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -238,52 +350,46 @@
   }
 
   function render() {
-    var c = counts();
+    var c = {};
+    state.menus.forEach(function (m) { c[m.id] = 0; });
+    Object.keys(state.votes).forEach(function (v) { var id = state.votes[v]; if (id in c) c[id]++; });
+
     var list = $('menuList');
     list.innerHTML = '';
-    if (!state.menus.length) {
-      list.appendChild(el('li', 'empty', '아직 메뉴가 없어요. 위에서 메뉴를 추가해 주세요.'));
-    }
+    if (!state.menus.length) list.appendChild(el('li', 'empty', '아직 메뉴가 없어요. 위에서 메뉴를 추가해 주세요.'));
     state.menus.forEach(function (m) {
       var li = el('li');
       li.appendChild(el('span', 'menu-name', m.name));
       li.appendChild(el('span', 'menu-count', c[m.id] + '표'));
       var vb = el('button', 'primary small', '투표');
-      vb.type = 'button';
-      vb.setAttribute('aria-label', m.name + '에 투표');
+      vb.type = 'button'; vb.setAttribute('aria-label', m.name + '에 투표');
       vb.onclick = function () { vote(m.id); };
       var db = el('button', 'ghost small', '삭제');
-      db.type = 'button';
-      db.setAttribute('aria-label', m.name + ' 삭제');
+      db.type = 'button'; db.setAttribute('aria-label', m.name + ' 삭제');
       db.onclick = function () { removeMenu(m.id); };
       li.appendChild(vb); li.appendChild(db);
       list.appendChild(li);
     });
 
-    // 결과 그래프
-    var total = Object.keys(c).reduce(function (s, k) { return s + c[k]; }, 0);
-    var max = 0;
-    Object.keys(c).forEach(function (k) { if (c[k] > max) max = c[k]; });
+    var total = 0, max = 0;
+    Object.keys(c).forEach(function (k) { total += c[k]; if (c[k] > max) max = c[k]; });
     var sorted = state.menus.slice().sort(function (a, b) { return c[b.id] - c[a.id]; });
     var chart = $('chart');
     chart.innerHTML = '';
+    if (!state.menus.length) { $('summary').textContent = '메뉴를 추가하면 결과가 여기에 표시돼요.'; return; }
 
-    if (!state.menus.length) {
-      $('summary').textContent = '메뉴를 추가하면 결과가 여기에 표시돼요.';
-      return;
-    }
     var leaders = sorted.filter(function (m) { return max > 0 && c[m.id] === max; });
     $('summary').textContent = '메뉴 ' + state.menus.length + '개 · 총 ' + total + '표' +
       (leaders.length ? ' · 현재 1위: ' + leaders.map(function (m) { return m.name; }).join(', ') +
         (leaders.length > 1 ? ' (공동)' : '') : ' · 아직 투표가 없어요');
 
     sorted.forEach(function (m) {
-      var n = c[m.id];
+      var n = c[m.id], isLead = max > 0 && n === max;
       var pct = total ? Math.round(n / total * 100) : 0;
-      var row = el('div', 'bar-row' + (max > 0 && n === max ? ' lead' : ''));
+      var row = el('div', 'bar-row' + (isLead ? ' lead' : ''));
       var label = el('div', 'bar-label');
       var name = el('span', 'name', m.name);
-      if (max > 0 && n === max) name.appendChild(el('span', 'badge', '1위'));
+      if (isLead) name.appendChild(el('span', 'badge', '1위'));
       label.appendChild(name);
       label.appendChild(el('span', 'val', n + '표 (' + pct + '%)'));
       var track = el('div', 'bar-track');
@@ -293,17 +399,14 @@
       fill.style.width = (max ? n / max * 100 : 0) + '%';
       track.appendChild(fill);
       row.appendChild(label); row.appendChild(track);
-      var who = votersOf(m.id);
-      if (who.length) {
-        var w = el('div', 'hint', '투표: ' + who.join(', '));
-        w.style.margin = '4px 0 0';
-        row.appendChild(w);
-      }
+      var who = Object.keys(state.votes).filter(function (v) { return state.votes[v] === m.id; });
+      if (who.length) { var w = el('div', 'hint', '투표: ' + who.join(', ')); w.style.margin = '4px 0 0'; row.appendChild(w); }
       chart.appendChild(row);
     });
   }
 
-  render();
+  refresh();
+  if (useCloud) setInterval(function () { if (!document.hidden) refresh(); }, REFRESH_SECONDS * 1000);
 })();
 </script>
 </body>
