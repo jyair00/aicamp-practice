@@ -98,6 +98,19 @@
   .legend { font-size: 12px; color: var(--text-secondary); margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap; }
   .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
   .footer-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+  /* 화면 안 확인 창 (브라우저 기본 확인 창이 막힌 환경 대비) */
+  .confirm-backdrop {
+    position: fixed; inset: 0; background: rgba(32, 33, 36, .45);
+    display: none; align-items: center; justify-content: center; padding: 16px; z-index: 10;
+  }
+  .confirm-backdrop.open { display: flex; }
+  .confirm-box {
+    background: var(--bg-card); border-radius: 12px; padding: 20px;
+    width: 100%; max-width: 380px; box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  }
+  .confirm-box p { margin: 0 0 16px; overflow-wrap: anywhere; }
+  .confirm-box .row { justify-content: flex-end; }
 </style>
 </head>
 <body>
@@ -143,6 +156,16 @@
     <button type="button" class="ghost" id="refreshBtn">새로고침</button>
     <button type="button" class="ghost" id="resetVotes">투표만 초기화</button>
     <button type="button" class="ghost" id="resetAll">전체 초기화</button>
+  </div>
+</div>
+
+<div id="confirmBackdrop" class="confirm-backdrop">
+  <div class="confirm-box" role="alertdialog" aria-modal="true" aria-labelledby="confirmText">
+    <p id="confirmText"></p>
+    <div class="row">
+      <button type="button" class="ghost" id="confirmNo">취소</button>
+      <button type="button" class="primary" id="confirmYes">지우기</button>
+    </div>
   </div>
 </div>
 
@@ -321,21 +344,52 @@ var REFRESH_SECONDS = 5;
     }).then(function () { busy(false); });
   }
 
+  // 브라우저 기본 confirm() 대신 화면 안 확인 창을 쓴다.
+  // (일부 앱 내장 브라우저는 confirm()을 띄우지 않고 바로 '취소'로 처리함)
+  function askConfirm(text) {
+    return new Promise(function (resolve) {
+      var bd = $('confirmBackdrop'), yes = $('confirmYes'), no = $('confirmNo');
+      $('confirmText').textContent = text;
+      bd.classList.add('open');
+      yes.disabled = false; no.disabled = false;
+      no.focus();
+      function close(ok) {
+        bd.classList.remove('open');
+        yes.onclick = no.onclick = bd.onclick = null;
+        document.removeEventListener('keydown', onKey);
+        resolve(ok);
+      }
+      function onKey(e) { if (e.key === 'Escape') close(false); }
+      yes.onclick = function () { close(true); };
+      no.onclick = function () { close(false); };
+      bd.onclick = function (e) { if (e.target === bd) close(false); };
+      document.addEventListener('keydown', onKey);
+    });
+  }
+
   function removeMenu(id) {
     var menu = menuById(id);
     var n = Object.keys(state.votes).filter(function (v) { return state.votes[v] === id; }).length;
-    if (!confirm('‘' + menu.name + '’ 메뉴를 삭제할까요?' + (n ? ' 받은 ' + n + '표도 함께 사라져요.' : '') + (useCloud ? ' 팀 전체 결과에서 지워져요.' : ''))) return;
-    busy(true);
-    store.removeMenu(id).then(refresh).catch(function (err) { setMsg($('voteMsg'), friendly(err), 'err'); })
-      .then(function () { busy(false); });
+    askConfirm('‘' + menu.name + '’ 메뉴를 삭제할까요?' + (n ? ' 받은 ' + n + '표도 함께 사라져요.' : '') + (useCloud ? ' 팀 전체 결과에서 지워져요.' : ''))
+      .then(function (ok) {
+        if (!ok) return;
+        busy(true);
+        return store.removeMenu(id).then(function () {
+          setMsg($('voteMsg'), '‘' + menu.name + '’ 메뉴를 삭제했어요.', 'ok');
+          return refresh();
+        }).catch(function (err) { setMsg($('voteMsg'), friendly(err), 'err'); })
+          .then(function () { busy(false); });
+      });
   }
 
   function confirmReset(text, fn, done) {
-    if (!confirm(text + (useCloud ? ' 팀 전체 결과에서 지워져요.' : ''))) return;
-    busy(true);
-    fn().then(function () { setMsg($('voteMsg'), done, 'ok'); return refresh(); })
-      .catch(function (err) { setMsg($('voteMsg'), friendly(err), 'err'); })
-      .then(function () { busy(false); });
+    askConfirm(text + (useCloud ? ' 팀 전체 결과에서 지워져요.' : '')).then(function (ok) {
+      if (!ok) return;
+      busy(true);
+      return fn().then(function () { setMsg($('voteMsg'), done, 'ok'); return refresh(); })
+        .catch(function (err) { setMsg($('voteMsg'), friendly(err), 'err'); })
+        .then(function () { busy(false); });
+    });
   }
   $('resetVotes').addEventListener('click', function () { confirmReset('모든 표를 지울까요? 메뉴는 남아요.', store.resetVotes, '투표를 초기화했어요.'); });
   $('resetAll').addEventListener('click', function () { confirmReset('메뉴와 표를 모두 지울까요?', store.resetAll, '전체를 초기화했어요.'); });
